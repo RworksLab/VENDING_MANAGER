@@ -3,7 +3,7 @@
 // 入力中の内容は drafts に保持し、タブを移動しても消えない。
 // =============================================================
 import {
-  CONTAINERS, TEMPS, TASTES, GENRES, LABEL_TEMPLATES, LABEL_POSITIONS, TEXT_STYLES, PRODUCT_FORM, PRICE_HINTS, unitCostOf, findGenre,
+  CONTAINERS, TEMPS, TASTES, GENRES, LABEL_TEMPLATES, LABEL_POSITIONS, TEXT_STYLES, PRODUCT_FORM, fairPrice, priceHintOf, unitCostOf, findGenre,
 } from '../config.js';
 import { getState, update, makeProduct, applyProductEdit } from '../state.js';
 import { drinkSVG, LIQUID_BY_GENRE } from '../render/art.js';
@@ -61,7 +61,7 @@ const swatches = (field, cur) => PRODUCT_FORM.colorPresets.map((c) =>
   `<button type="button" class="sw" style="--c:${c}" data-set="${field}" data-val="${c}" aria-pressed="${c === cur}" aria-label="${c}"></button>`).join('')
   + `<label class="sw custom" aria-label="自由に選ぶ"><input type="color" data-field="${field}" value="${cur}"><span>＋</span></label>`;
 
-const priceHint = (v) => PRICE_HINTS.find((h) => v <= h.max).text;
+const priceHint = (d) => { const f = fairPrice(d.genre, d.volume); return `適正価格の目安 ${yen(f)}（置き場所で変わります）<br>${priceHintOf(d.price, f)}`; };
 const LEVELS = [[0, 'なし'], [1, '弱'], [2, '中'], [3, '強']];
 
 function previewHTML(d) {
@@ -111,7 +111,7 @@ function sections(d) {
     iconNote: d.label.icon && d.label.mode === 'image' ? '<p class="muted small">アイコンの丸はラベルの色になります</p>' : '',
     textDir: chips('label.textDir', [['h', '横書き'], ['v', '縦書き']], d.label.textDir),
     textColor: swatches('label.textColor', d.label.textColor),
-    priceInfo: `<span class="hint">${priceHint(d.price)}</span>`,
+    priceInfo: `<span class="hint">${priceHint(d)}</span>`,
   };
 }
 

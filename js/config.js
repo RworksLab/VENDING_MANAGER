@@ -132,13 +132,21 @@ export const PRODUCT_FORM = {
 };
 
 // 価格の目安（仕様書 9-2）。商品開発画面のヒント表示用
+// 適正価格：ジャンルごとの「500ml のときの値段」から内容量で決める（場所の財布のゆるさ spendMul もかかる）
+//  内容量 v ml のとき ＝ at500 ×（0.55 ＋ 0.45 × v / 500）を 10 円単位に丸める
+export const GENRE_PRICE = { water: 130, tea: 160, coffee: 200, soda: 180, juice: 170, sweet: 170, energy: 260, other: 160 };
+export const fairPrice = (genre, volume, spendMul = 1) =>
+  Math.round(((GENRE_PRICE[genre] ?? GENRE_PRICE.other) * (0.55 + 0.45 * volume / 500) * spendMul) / 10) * 10;
+
+// 価格の目安（適正価格との比で表示）
 export const PRICE_HINTS = [
-  { max: 90, text: '安くて売れやすい' },
-  { max: 119, text: '標準的' },
-  { max: 159, text: '利益と販売数のバランス' },
-  { max: 219, text: '利益は大きいが売れにくい' },
-  { max: Infinity, text: '高額で需要が大きく低下' },
+  { max: 0.8, text: 'かなり安い：よく売れるが利益は少なめ' },
+  { max: 0.95, text: '少し安め：売れやすい' },
+  { max: 1.05, text: '適正価格：いちばん儲かりやすい' },
+  { max: 1.2, text: '少し高め：売れ行きが落ちる' },
+  { max: Infinity, text: '高すぎ：ほとんど売れない' },
 ];
+export const priceHintOf = (price, fair) => PRICE_HINTS.find((h) => price / fair <= h.max).text;
 
 // アップロード画像の縮小設定（保存容量を抑える）
 export const LABEL_IMAGE = { maxSide: 320, quality: 0.82, mime: 'image/jpeg' };
@@ -218,9 +226,8 @@ export const SIM = {
   maxOfflineHours: 72,      // 放置中に計算する上限（時間）。これより長い分は売れない
   basePerHour: 0.5,         // 補正がすべて1のときの販売数（本/時/スロット）
   noise: 0.15,              // ±15% のゆらぎ（仕様書 9-4）
-  priceElasticity: 1.6,     // 価格の効き方。大きいほど高値で売れにくい
-  priceRefBase: 100,        // 基準価格 ＝ priceRefBase + 内容量(ml) × priceRefPerMl
-  priceRefPerMl: 0.08,
+  priceElasticityLow: 1.2,  // 適正価格より安いとき：安くするほど少しずつ売れやすくなる
+  priceElasticityHigh: 3.5, // 適正価格より高いとき：急に売れにくくなる（適正価格がいちばん儲かる）
   welcomeBackMinutes: 30,   // これ以上空けて戻ると「留守中の売上」を表示
   salesLogMax: 200,
 };

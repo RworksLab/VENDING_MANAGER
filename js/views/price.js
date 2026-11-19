@@ -3,8 +3,8 @@
 // 価格を動かすと「1本の利益」と「1時間あたりの売れ行きの目安」がその場で変わる
 // =============================================================
 import { getState, update } from '../state.js';
-import { PRODUCT_FORM, PRICE_HINTS, findLocation } from '../config.js';
-import { expectedPerHour } from '../sim.js';
+import { PRODUCT_FORM, priceHintOf, findLocation } from '../config.js';
+import { expectedPerHour, refPrice } from '../sim.js';
 import { drinkSVG } from '../render/art.js';
 import { esc, yen } from '../util.js';
 import { toast } from '../ui.js';
@@ -13,7 +13,6 @@ import { se } from '../audio.js';
 import { notePriced } from '../coach.js';
 
 const clamp = (v) => Math.min(PRODUCT_FORM.priceMax, Math.max(PRODUCT_FORM.priceMin, Math.round(Number(v) || 0)));
-const hint = (v) => PRICE_HINTS.find((h) => v <= h.max).text;
 const ui = { id: null, draft: {}, same: true };
 
 export function render(s, id) {
@@ -26,11 +25,12 @@ export function render(s, id) {
     const trial = { ...m, slots: m.slots.map((x, j) => (j === i ? { ...x, price } : x)) };
     const per = expectedPerHour(trial, i, Date.now(), s);
     const margin = price - (sl.item.unitCost || 0);
+    const fair = refPrice(sl.item, findLocation(m.locationId));
     return `<div class="pr-row ${ui.draft[i] !== undefined ? 'changed' : ''}">
       <span class="rf-art">${drinkSVG(sl.item)}</span>
       <span class="rf-main"><b>${esc(sl.item.name)}<em class="pr-pos">スロット${i + 1}</em></b>
         <small>利益 <span class="${margin < 0 ? 'warn-t' : 'ok-t'}">${yen(margin)}</span>/本・目安 ${per.toFixed(1)}本/時</small>
-        <small class="pr-hint">${hint(price)}</small></span>
+        <small class="pr-hint">適正 ${yen(fair)}・${priceHintOf(price, fair)}</small></span>
       <div class="stepper" data-price="${i}">
         <button type="button" class="st-btn" data-d="-10" aria-label="10円下げる">−</button>
         <input class="st-inp pr-inp" type="text" inputmode="numeric" maxlength="3" value="${price}" aria-label="${esc(sl.item.name)}の価格">

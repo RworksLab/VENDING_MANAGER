@@ -7,7 +7,7 @@
 // =============================================================
 import {
   SIM, HOURLY_TRAFFIC, TIME_BANDS, LOCATION_GENRE, NIGHT_LOCATION, SEASON_TEMP,
-  findLocation, slotBonusOf, BALANCE, capOf, upgradeOf, UPKEEP, TROUBLE, NOTIFY, LOCATIONS, SUPPORT,
+  findLocation, fairPrice, slotBonusOf, BALANCE, capOf, upgradeOf, UPKEEP, TROUBLE, NOTIFY, LOCATIONS, SUPPORT,
 } from './config.js';
 import { update, getState, addNotice } from './state.js';
 import { dateKey, yen as yenText } from './util.js';
@@ -15,8 +15,13 @@ import { factorsAt } from './events.js';
 
 const TICK = SIM.tickMinutes * 60 * 1000;
 
-export const refPrice = (item, loc) => (SIM.priceRefBase + item.volume * SIM.priceRefPerMl) * loc.spendMul;
-export const priceFactor = (price, item, loc) => Math.min(3, (refPrice(item, loc) / Math.max(10, price)) ** SIM.priceElasticity);
+/** 適正価格（ジャンル・内容量・場所で決まる） */
+export const refPrice = (item, loc) => fairPrice(item.genre, item.volume, loc.spendMul);
+/** 価格による売れ行きの倍率。適正価格より高いと急に落ちる */
+export const priceFactor = (price, item, loc) => {
+  const r = refPrice(item, loc) / Math.max(10, price);
+  return Math.min(3, r ** (r >= 1 ? SIM.priceElasticityLow : SIM.priceElasticityHigh));
+};
 
 /** 1スロットの期待販売数（本/時）。乱数なし。画面の目安表示にも使う */
 export function expectedPerHour(m, slotIndex, at = Date.now(), s = getState()) {
