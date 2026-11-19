@@ -8,6 +8,11 @@ import { drinkSVG, machineSVG } from '../render/art.js';
 import { ill } from '../icons.js';
 import { esc, num, yen, dateKey } from '../util.js';
 import { pageHead } from './parts.js';
+import { getState } from '../state.js';
+import { achievementList, claimAchievement } from '../rewards.js';
+import { toast } from '../ui.js';
+import { se } from '../audio.js';
+import { coin } from '../icons.js';
 
 function week(s) {
   const map = Object.fromEntries(s.dailyHistory.map((d) => [d.date, d]));
@@ -48,6 +53,7 @@ export function render(s) {
       </div>
       <p class="muted small">維持費は全${s.machines.length}台で 1日 ${yen(upDay)}（10分ごとに日割りで差し引き）</p>
     </section>
+    ${achievementsSection(s)}
     <section class="wcard">
       <h2 class="wtitle">${ill('bars')}直近7日間の売上</h2>
       ${week(s)}
@@ -76,4 +82,41 @@ export function render(s) {
         <span class="rk-main"><b>${esc(m.name)}</b><small>${esc(findLocation(m.locationId).name)}・${num(m.totalUnits)}本</small></span><b>${yen(m.totalSales)}</b></li>`).join('')}</ol>
     </section>
   </div>`;
+}
+
+// ---------- 実績と報酬 ----------
+let showAll = false;
+function achievementsSection(s) {
+  const list = achievementList(s);
+  const order = (x) => (x.done && !x.claimed ? 0 : !x.done ? 1 : 2);
+  const sorted = [...list].sort((a, b) => order(a) - order(b) || b.value / b.goal - a.value / a.goal);
+  const claimable = list.filter((x) => x.done && !x.claimed).length;
+  const shown = showAll ? sorted : sorted.filter((x) => !x.claimed).slice(0, 5);
+  const fmt = (x, v) => (x.unit === '円' ? yen(v) : `${num(v)}${x.unit}`);
+  const rows = shown.map((x) => `<li class="ach ${x.done ? 'done' : ''} ${x.claimed ? 'claimed' : ''}">
+      <span class="ach-ic">${x.done ? ill('star') : ill('lock')}</span>
+      <span class="ach-main"><b>${esc(x.name)}</b><small>${esc(x.desc || `${fmt(x, x.goal)}を達成`)}</small>
+        ${x.done ? '' : `<span class="bar thin"><i style="width:${Math.round((x.value / x.goal) * 100)}%"></i></span><small class="ach-prog">${fmt(x, x.value)} / ${fmt(x, x.goal)}</small>`}</span>
+      ${x.claimed ? '<em class="ach-got">受取済</em>'
+        : x.done ? `<button class="btn primary ach-btn" data-claim="${x.id}">${coin()}${yen(x.reward)}</button>`
+          : `<span class="ach-rw">${coin()}${yen(x.reward)}</span>`}
+    </li>`).join('');
+  const got = list.filter((x) => x.claimed).length;
+  return `<section class="wcard" id="ach">
+    <h2 class="wtitle">${ill('star')}実績と報酬${claimable ? `<i class="badge">${claimable}</i>` : ''}<small class="ach-count">${got}/${list.length}</small></h2>
+    <ul class="ach-list">${rows || '<li class="muted">すべて受け取りました</li>'}</ul>
+    <button class="btn ghost wide" id="ach-all">${showAll ? '閉じる' : 'すべての実績を見る'}</button>
+  </section>`;
+}
+
+export function mount(el) {
+  el.querySelectorAll('[data-claim]').forEach((b) => b.addEventListener('click', () => {
+    const amt = claimAchievement(b.dataset.claim);
+    if (amt) { se('buy'); toast(`報酬 ${yen(amt)} を受け取りました`); }
+  }));
+  el.querySelector('#ach-all')?.addEventListener('click', () => {
+    showAll = !showAll;
+    el.querySelector('#ach').outerHTML = achievementsSection(getState());
+    mount(el);
+  });
 }

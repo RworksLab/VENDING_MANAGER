@@ -7,7 +7,7 @@
 // =============================================================
 import {
   SIM, HOURLY_TRAFFIC, TIME_BANDS, LOCATION_GENRE, NIGHT_LOCATION, SEASON_TEMP,
-  findLocation, slotBonusOf, BALANCE, capOf, upgradeOf, UPKEEP, TROUBLE, NOTIFY, LOCATIONS,
+  findLocation, slotBonusOf, BALANCE, capOf, upgradeOf, UPKEEP, TROUBLE, NOTIFY, LOCATIONS, SUPPORT,
 } from './config.js';
 import { update, getState, addNotice } from './state.js';
 import { dateKey, yen as yenText } from './util.js';
@@ -111,9 +111,10 @@ export function runSimulation(now = Date.now()) {
         // 維持費（日割り）。端数は持ち越して円単位で引く
         const fee = upkeepOf(m, at, st).total / ticksPerDay;
         st.upkeepCarry = (st.upkeepCarry || 0) + fee;
-        const pay = Math.floor(st.upkeepCarry);
+        let pay = Math.floor(st.upkeepCarry);
+        if (pay) st.upkeepCarry -= pay;
+        pay = Math.min(pay, Math.max(0, st.money - SUPPORT.debtFloor));   // 所持金が下限を割る分は免除（ツケにしない）
         if (pay) {
-          st.upkeepCarry -= pay;
           st.money -= pay;
           st.stats.totalUpkeep = (st.stats.totalUpkeep || 0) + pay;
           day.upkeep = (day.upkeep || 0) + pay;

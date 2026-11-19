@@ -34,38 +34,39 @@ function guide(s) {
   const mh = m ? `#machine-${m.id}` : '#machines';
   switch (step) {
     case 'buy':
-      if (h === '#buy-machine') return { text: '好きな色を選んで、設置する場所（住宅街）をタップしましょう。', target: '.pick-loc:not([disabled])' };
+      if (h === '#buy-machine') return { text: '好きな色を選んで、設置する場所（住宅街）をタップしましょう。', target: '.pick-loc:not([disabled])', allow: ['.buy-color'] };
       if (h === '#shop') return { text: '「自販機を購入」の「購入する」をタップしましょう。', target: 'a.buy-btn[href="#buy-machine"]' };
       return { text: 'まずは最初の自販機を買いましょう。ショップへ行きます。', go: ['#shop', 'ショップへ'], target: '.tabbar a[href="#shop"]' };
     case 'product': {
-      if (h !== '#product-new') return { text: '自販機で売るオリジナルドリンクを作りましょう。', go: ['#product-new', '商品開発へ'] };
+      if (h !== '#product-new') return { text: '自販機で売るオリジナルドリンクを作りましょう。', go: ['#product-new', '商品開発へ'], target: '.tabbar a[href="#products"]' };
       const tab = $('.ptabs [aria-selected="true"]')?.dataset.tab || 'basic';
       const name = $('[data-field="name"]');
+      const form = ['#panel'];   // 入力欄・選択肢は自由にさわれる
       if (tab === 'basic') return name && !name.value.trim()
         ? { text: '商品名を入力しましょう。', target: '[data-field="name"]' }
-        : { text: 'ボトル・缶、容量、HOT・COLDを選んだら、「味」タブへ。', target: '.ptabs [data-tab="taste"]' };
-      if (tab === 'taste') return { text: '味を決めたら、「デザイン」タブへ。', target: '.ptabs [data-tab="design"]' };
-      if (tab === 'design') return { text: '色とラベルを決めましょう。できたら「開発する！」。', target: '.pe-actions button[type="submit"]' };
-      return { text: '準備ができたら「開発する！」で完成です。', target: '.pe-actions button[type="submit"]' };
+        : { text: 'ボトル・缶、容量、HOT・COLDを選んだら、「味」タブへ。', target: '.ptabs [data-tab="taste"]', allow: form };
+      if (tab === 'taste') return { text: '味を決めたら、「デザイン」タブへ。', target: '.ptabs [data-tab="design"]', allow: form };
+      if (tab === 'design') return { text: '色とラベルを決めましょう。できたら「開発する！」。', target: '.pe-actions button[type="submit"]', allow: [...form, '.ptabs'] };
+      return { text: '準備ができたら「開発する！」で完成です。', target: '.pe-actions button[type="submit"]', allow: [...form, '.ptabs'] };
     }
     case 'stock': {
       if (h !== '#warehouse') return { text: '作った商品を倉庫に仕入れましょう。', go: ['#warehouse', '倉庫へ'], target: '.tabbar a[href="#warehouse"]' };
       if ($('[data-buy-go]')) return { text: '数量を確かめて「購入する」をタップ。', target: '[data-buy-go]' };
-      if (!$('.bgrid')) return { text: '「仕入れ」タブを開きましょう。', target: '[data-tab="buy"]' };
-      if ($('.cart-bar')) return { text: '仕入れる数が決まったら、下のカートを開きましょう。', target: '.cart-bar' };
-      return { text: '作った商品の「＋」で、仕入れる数を決めましょう。', target: '.bcard .mini-step [data-d="1"]' };
+      if (!$('.bgrid')) return { text: '「仕入れ」タブを開きましょう。', target: '.page-seg [data-tab="buy"]' };
+      if ($('.cart-bar')) return { text: '仕入れる数が決まったら、下のカートを開きましょう。', target: '.cart-bar', allow: ['.bgrid'] };
+      return { text: '作った商品の「＋」で、仕入れる数を決めましょう。', target: '.bcard .mini-step [data-d="1"]', allow: ['.bgrid'] };
     }
     case 'refill': {
       if (!m) return null;
       if (h === `#refill-${m.id}`) return $('.rp-lot')
-        ? { text: '枠を選んで、倉庫の商品をタップ。+1・+5・満タンで数量を変えられます。', target: '.rp-lot' }
-        : { text: '「+1」「+5」「満タン」で数量を決めて補充しましょう。', target: '.rp-btn.main' };
+        ? { text: '枠を選んで、倉庫の商品をタップ。+1・+5・満タンで数量を変えられます。', target: '.rp-lot', allow: ['.sg', '.rp'] }
+        : { text: '「+1」「+5」「満タン」で数量を決めて補充しましょう。', target: '.rp-btn.main', allow: ['.sg', '.rp'] };
       if (h === mh) return { text: '「補充・回収」をタップしましょう。', target: 'a.bbtn.blue' };
       return { text: '自販機を選んで、倉庫の商品を並べましょう。', go: [mh, '自販機へ'] };
     }
     case 'price': {
       if (!m) return null;
-      if (h === `#price-${m.id}`) return { text: '＋−で販売価格を決めて「保存する」。今の価格でよければ「この価格で決定」でOK。', target: '[data-save]:not([disabled])', action: ['この価格で決定', () => setStep('open', { go: mh })] };
+      if (h === `#price-${m.id}`) return { text: '＋−で販売価格を決めて「保存する」。今の価格でよければ「この価格で決定」でOK。', target: '[data-save]:not([disabled])', allow: ['#op'], action: ['この価格で決定', () => setStep('open', { go: mh })] };
       if (h === mh) return { text: '「価格変更」をタップして、販売価格を決めましょう。', target: 'a.bbtn.yellow' };
       return { text: '販売価格を決めましょう。', go: [mh, '自販機へ'] };
     }
@@ -74,7 +75,7 @@ function guide(s) {
       if (h === mh) return { text: '準備完了！「営業開始」をタップしましょう。', target: '#open-btn' };
       return { text: '自販機の営業を始めましょう。', go: [mh, '自販機へ'] };
     case 'firstSale':
-      return { text: 'お客さんが来るのを待っています…', wait: true };
+      return { text: 'お客さんが来るのを待っています…', wait: true, block: true };
     default: return null;
   }
 }
@@ -138,8 +139,68 @@ async function skip() {
   update((s) => { s.tutorial = { step: 'done' }; s.machines.forEach((m) => { m.open = true; }); });
 }
 
-// ---------- 画面下の案内カードと光らせる場所 ----------
-let bar = null, lastTarget = null, scrolledKey = '';
+// ---------- 案内カード・暗幕（押すところ以外は暗く、さわれない） ----------
+let bar = null, dim = null, holes = [], loop = 0, scrolledKey = '';
+
+/** 暗幕：画面全体を覆う SVG。明るくする場所はマスクで抜く（重なっても大丈夫） */
+function ensureDim() {
+  if (dim) return dim;
+  dim = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  dim.setAttribute('class', 'coach-dim');
+  dim.setAttribute('aria-hidden', 'true');
+  dim.innerHTML = '<defs><mask id="coach-mask"><rect width="100%" height="100%" fill="#fff"/><g fill="#000"></g></mask></defs><rect class="coach-shade" width="100%" height="100%" mask="url(#coach-mask)"/>';
+  document.body.appendChild(dim);
+  return dim;
+}
+
+let lastHoles = '';
+function drawDim() {
+  if (!dim) return;
+  const W = innerWidth, H = innerHeight, pad = 6;
+  let out = '';
+  for (const el of holes) {
+    if (!el.isConnected) continue;
+    const b = el.getBoundingClientRect();
+    if (!b.width || !b.height || b.bottom < 0 || b.top > H) continue;
+    const x = b.left - pad, y = b.top - pad, w = b.width + pad * 2, h = b.height + pad * 2;
+    out += `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${w.toFixed(1)}" height="${h.toFixed(1)}" rx="12"/>`;
+  }
+  if (out !== lastHoles) { lastHoles = out; dim.querySelector('mask g').innerHTML = out; }
+}
+
+// 明るい場所・案内カード以外のタップは止める（スクロールはできる）
+function allowed(t) {
+  if (!dim) return true;
+  if (!(t instanceof Element)) return false;
+  if (bar?.contains(t) || t.closest('.update-bar')) return true;
+  return holes.some((h) => h.contains(t));
+}
+function nudge() {
+  const t = document.querySelector('.coach-target');
+  if (!t) return;
+  t.classList.remove('coach-nudge'); void t.offsetWidth; t.classList.add('coach-nudge');
+}
+function guard(e) {
+  if (allowed(e.target)) return;
+  e.preventDefault();
+  e.stopPropagation();
+  if (e.type === 'click') nudge();
+}
+['click', 'mousedown', 'touchend', 'keydown'].forEach((type) => document.addEventListener(type, (e) => {
+  if (type === 'keydown' && !(e.key === 'Enter' || e.key === ' ')) return;
+  guard(e);
+}, { capture: true }));
+
+// スクロールやアニメーションで位置が変わっても穴がついていくよう、表示中は毎フレーム合わせる
+function startLoop() { if (!loop) { const f = () => { drawDim(); loop = requestAnimationFrame(f); }; loop = requestAnimationFrame(f); } }
+function stopLoop() { cancelAnimationFrame(loop); loop = 0; }
+
+function clearCoach() {
+  bar?.remove(); bar = null;
+  dim?.remove(); dim = null;
+  holes = []; lastHoles = ''; stopLoop();
+  document.body.classList.remove('coaching');
+}
 
 function paint() {
   const s = getState();
@@ -147,8 +208,8 @@ function paint() {
   if (inTutorial(s) && advance(s)) return;   // 進んだら update → 再描画で呼ばれ直す
   document.querySelectorAll('.coach-target').forEach((el) => el.classList.remove('coach-target'));
   const g = inTutorial(s) ? guide(s) : null;
-  document.body.classList.toggle('coaching', !!g);
-  if (!g) { bar?.remove(); bar = null; return; }
+  if (!g) { clearCoach(); return; }
+  document.body.classList.add('coaching');
   const step = tutorialStep(s);
   if (step === 'firstSale') scheduleFirstSale();
   if (!bar) {
@@ -169,18 +230,42 @@ function paint() {
     ${g.go || g.action ? `<div class="coach-btns">
       ${g.go ? `<a class="btn primary" href="${g.go[0]}">${g.go[1]}</a>` : ''}
       ${g.action ? `<button type="button" class="btn" data-coach-act>${g.action[0]}</button>` : ''}</div>` : ''}`;
-  document.documentElement.style.setProperty('--coach-h', `${bar.offsetHeight + 10}px`);   // 案内カードのぶん画面を下げる
-  const el = g.target && document.querySelector(g.target);
-  if (el) {
-    el.classList.add('coach-target');
+
+  // 明るくする場所：押すボタン＋自由に操作してよい範囲。シートが開いているときはシート全体
+  const target = g.target && document.querySelector(g.target);
+  const sheet = !document.getElementById('overlay')?.hidden && document.querySelector('#overlay .sheet');
+  holes = sheet ? [sheet] : [target, ...(g.allow || []).flatMap((sel) => [...document.querySelectorAll(sel)])].filter(Boolean);
+  // 押すところが見つからないときは、移動ボタンのある案内カードだけ使えるように暗くする（待ち時間も同じ）
+  const useDim = !!(sheet || target || g.go || g.block);
+  if (useDim) { ensureDim(); drawDim(); startLoop(); } else { dim?.remove(); dim = null; lastHoles = ''; stopLoop(); }
+
+  placeBar(target);
+  if (target) {
+    target.classList.add('coach-target');
     const key = `${step}|${hash()}|${g.target}`;
-    if (key !== scrolledKey && el !== lastTarget) {
+    if (key !== scrolledKey) {
       scrolledKey = key;
-      const r = el.getBoundingClientRect();
-      if (r.top < bar.getBoundingClientRect().bottom + 10 || r.bottom > innerHeight - 90) el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      const rb = target.getBoundingClientRect(), cb = bar.getBoundingClientRect();
+      if (rb.top < cb.bottom + 10 || rb.bottom > innerHeight - 90) {
+        // 案内カードに隠れない位置までスクロール
+        const want = cb.bottom + (innerHeight - cb.bottom) / 2 - rb.height / 2;
+        scrollBy({ top: rb.top - want, behavior: 'smooth' });
+      }
     }
   }
-  lastTarget = el;
+}
+
+/** 押すところが案内カードに隠れるなら、カードを画面の下に移す */
+function placeBar(target) {
+  if (!bar) return;
+  bar.classList.remove('bottom');
+  if (!target) return;
+  // 押すところ・さわれる範囲のうち、いちばん上にあるもので判定する
+  const tops = holes.filter((h) => h.isConnected).map((h) => h.getBoundingClientRect()).filter((r) => r.height);
+  const tb = tops.reduce((a, r) => (r.top < a.top ? r : a), target.getBoundingClientRect());
+  const cb = bar.getBoundingClientRect();
+  const canScrollUp = scrollY > 0 || document.documentElement.scrollHeight - innerHeight > tb.top - cb.bottom;
+  if (tb.top < cb.bottom + 8 && !(canScrollUp && scrollY + tb.top - cb.bottom - 20 > 0)) bar.classList.add('bottom');
 }
 
 let raf = 0;
@@ -191,7 +276,7 @@ export function initCoach(subscribe) {
   addEventListener('hashchange', schedule);
   // 画面の一部だけ描き直す操作（タブ切り替え・カートなど）にもついていく
   const mo = new MutationObserver((list) => {
-    if (list.every((r) => bar && bar.contains(r.target))) return;
+    if (list.every((r) => (bar && bar.contains(r.target)) || (dim && dim.contains(r.target)))) return;
     schedule();
   });
   ['view', 'overlay'].forEach((id) => { const el = document.getElementById(id); if (el) mo.observe(el, { childList: true, subtree: true, attributes: true, attributeFilter: ['aria-selected', 'hidden'] }); });

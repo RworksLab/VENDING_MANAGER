@@ -288,7 +288,7 @@ export function mount(el, s, key) {
     const input = clone(d);
     delete drafts[key];
     update((st) => {
-      if (key === 'new') st.products.unshift(makeProduct(input));
+      if (key === 'new') { st.products.unshift(makeProduct(input)); st.stats.developed = Math.max(st.stats.developed || 0, st.products.length - 1) + 1; }
       else { const p = st.products.find((x) => x.id === key); if (p) applyProductEdit(p, input); }
       collectGarbage(st, draftImages());
     });

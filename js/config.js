@@ -339,3 +339,29 @@ export const NOTIFY = {
     { id: 'trouble',  name: 'トラブル' },
   ],
 };
+
+// =============================================================
+// 救済措置：所持金がピンチのときの「経営支援金」
+//  - 所持金が trigger 未満で、自販機と倉庫の在庫の合計が stockLow 本未満のとき（売る物がなく立て直せない）
+//    → 借金をなくして amount 円を受け取れる。1日1回まで
+//  - 維持費の支払いで所持金が debtFloor より下がることはない（それ以上はツケにしない）
+// =============================================================
+export const SUPPORT = { trigger: 1000, stockLow: 20, amount: 5000, debtFloor: -10000 };
+
+// =============================================================
+// 実績と報酬。達成すると「経営」ページで報酬を受け取れる
+//  value(s)：今の進み具合、goal：達成ライン、reward：報酬（円）
+// =============================================================
+const bestDay = (s) => Math.max(s.today?.sales || 0, ...(s.dailyHistory || []).map((d) => d.sales || 0));
+const upgradeTotal = (s) => s.machines.reduce((a, m) => a + Object.values(m.upgrades || {}).reduce((x, y) => x + y, 0), 0);
+const tiers = (id, name, unit, value, list) => list.map(([goal, reward], i) => ({ id: `${id}${i + 1}`, name: `${name} ${i + 1}`, goal, reward, unit, value }));
+export const ACHIEVEMENTS = [
+  { id: 'firstSale', name: 'はじめての売上', goal: 1, reward: 1000, unit: '本', value: (s) => s.stats.totalUnits, desc: '商品を1本売る' },
+  ...tiers('units', '販売本数', '本', (s) => s.stats.totalUnits, [[50, 2000], [300, 6000], [1000, 15000], [5000, 50000]]),
+  ...tiers('sales', '累計売上', '円', (s) => s.stats.totalSales, [[10000, 2000], [50000, 5000], [200000, 20000], [1000000, 80000]]),
+  ...tiers('day', '1日の売上', '円', bestDay, [[5000, 3000], [20000, 10000], [60000, 30000]]),
+  ...tiers('dev', '商品開発', '種類', (s) => s.stats.developed || s.products.length, [[3, 2000], [10, 8000]]),
+  ...tiers('mach', '自販機オーナー', '台', (s) => s.machines.length, [[2, 5000], [5, 20000]]),
+  ...tiers('loc', '進出', 'か所', (s) => s.unlockedLocations.length - 1, [[1, 5000], [3, 20000]]),
+  ...tiers('upg', '設備投資', 'レベル', upgradeTotal, [[5, 3000], [20, 15000]]),
+];

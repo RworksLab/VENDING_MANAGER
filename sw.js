@@ -5,12 +5,12 @@
 //  - サーバーからのプッシュ通知（push イベント）を受け取って表示する受け口
 // ファイルを更新したら VERSION を上げる
 // =============================================================
-const VERSION = 'v6';
+const VERSION = 'v7';
 const CACHE = `vending-sim-${VERSION}`;
 const SHELL = [
   './', './index.html', './manifest.webmanifest', './css/style.css',
   './js/app.js', './js/config.js', './js/state.js', './js/storage.js', './js/util.js', './js/ui.js', './js/icons.js',
-  './js/images.js', './js/actions.js', './js/sim.js', './js/events.js', './js/notify.js', './js/audio.js', './js/update.js', './js/coach.js',
+  './js/images.js', './js/actions.js', './js/sim.js', './js/events.js', './js/notify.js', './js/audio.js', './js/update.js', './js/coach.js', './js/rewards.js',
   './js/render/art.js', './js/render/map.js',
   './js/views/home.js', './js/views/machines.js', './js/views/products.js', './js/views/productEdit.js', './js/views/more.js',
   './js/views/warehouse.js', './js/views/refill.js', './js/views/arrange.js', './js/views/price.js', './js/views/slotgrid.js',

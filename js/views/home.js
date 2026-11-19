@@ -5,7 +5,9 @@ import { townMap, machineStatus, miniMachine } from '../render/map.js';
 import { ill, coin, weatherIcon } from '../icons.js';
 import { dayInfo, visibleEvents } from '../events.js';
 import { num, yen, esc } from '../util.js';
-import { openSheet } from '../ui.js';
+import { openSheet, toast } from '../ui.js';
+import { supportAvailable, claimSupport, claimableCount } from '../rewards.js';
+import { se } from '../audio.js';
 
 export function render(s) {
   const running = s.machines.filter((m) => machineStatus(m).key !== 'idle').length;
@@ -14,7 +16,10 @@ export function render(s) {
   const info = dayInfo(s.events.seed, s.today.date);
   const wx = info.weather;
   const evCount = visibleEvents(info, s.today.date).length;
+  const help = supportAvailable(s);
+  const claim = claimableCount(s);
   return `
+  ${help ? `<section class="help-card">${coin()}<span><b>資金がピンチです</b><small>経営支援金 ${yen(help)} を受け取れます（1日1回）</small></span><button class="btn primary" id="help-btn">受け取る</button></section>` : ''}
   <section class="kpi-box" aria-label="本日の経営状況">
     <div>${coin()}<span><small>本日の売上</small><b>${num(s.today.sales)}<em>円</em></b></span></div>
     <div>${ill('bottle')}<span><small>販売本数</small><b>${num(s.today.units)}<em>本</em></b></span></div>
@@ -29,7 +34,7 @@ export function render(s) {
   </section>
   <div class="home-links">
     <button class="hlink" data-open="status">${ill('power')}<span>稼働状況</span></button>
-    <a class="hlink" href="#stats">${ill('barsBlue')}<span>経営</span></a>
+    <a class="hlink" href="#stats">${ill('barsBlue')}<span>経営</span>${claim ? `<i class="badge">${claim}</i>` : ''}</a>
     <a class="hlink" href="#events">${weatherIcon(wx.id, 'ill')}<span>イベント</span>${evCount ? `<i class="badge blue">${evCount}</i>` : ''}</a>
     <a class="hlink" href="#settings">${ill('gear')}<span>設定</span>${unread ? `<i class="badge">${unread}</i>` : ''}</a>
   </div>`;
@@ -37,6 +42,10 @@ export function render(s) {
 
 // 稼働状況は下から開くシートで確認する（経営・イベントは別ページ）
 export function mount(el) {
+  el.querySelector('#help-btn')?.addEventListener('click', () => {
+    const amt = claimSupport();
+    if (amt) { se('buy'); toast(`経営支援金 ${yen(amt)} を受け取りました`); }
+  });
   el.querySelectorAll('[data-open]').forEach((b) => b.addEventListener('click', () => openPanel(b.dataset.open)));
 }
 

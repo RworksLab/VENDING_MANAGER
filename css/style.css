@@ -905,8 +905,7 @@ body{font-size:15px}
 @media(prefers-reduced-motion:no-preference){.update-bar{animation:ub .35s ease-out}@keyframes ub{from{opacity:0;transform:translate(-50%,-12px)}}}
 
 /* ---------- 操作しながら進むチュートリアル ---------- */
-body.coaching .view{padding-top:calc(var(--hud-h) + max(10px,env(safe-area-inset-top)) + var(--coach-h, 120px))}
-.coach{position:fixed;z-index:30;left:10px;right:10px;top:calc(var(--hud-h) + env(safe-area-inset-top) + 6px);max-width:520px;margin:0 auto;
+.coach{position:fixed;z-index:32;left:10px;right:10px;top:calc(var(--hud-h) + env(safe-area-inset-top) + 6px);max-width:520px;margin:0 auto;
   background:#fff;border:3px solid var(--blue);border-radius:18px;padding:10px 12px 12px;box-shadow:0 6px 18px rgba(29,43,85,.22)}
 @media(prefers-reduced-motion:no-preference){.coach{animation:coach-in .3s ease-out}@keyframes coach-in{from{opacity:0;transform:translateY(-12px)}}}
 .coach-head{display:flex;align-items:center;gap:8px}
@@ -918,7 +917,32 @@ body.coaching .view{padding-top:calc(var(--hud-h) + max(10px,env(safe-area-inset
 .coach-dots{display:inline-flex;gap:3px;margin-right:6px;vertical-align:middle}.coach-dots i{width:6px;height:6px;border-radius:50%;background:var(--blue)}
 @media(prefers-reduced-motion:no-preference){.coach-dots i{animation:cd 1s infinite}.coach-dots i:nth-child(2){animation-delay:.15s}.coach-dots i:nth-child(3){animation-delay:.3s}@keyframes cd{50%{opacity:.25}}}
 .coach-target{outline:3px solid var(--yellow) !important;outline-offset:3px}
+.coach-dim{position:fixed;inset:0;width:100%;height:100%;z-index:31;pointer-events:none}
+.coach-shade{fill:rgba(18,26,52,.62)}
+@media(prefers-reduced-motion:no-preference){.coach-nudge{animation:nudge .4s}@keyframes nudge{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}}
 @media(prefers-reduced-motion:no-preference){.coach-target{animation:ct 1.2s ease-in-out infinite}@keyframes ct{50%{outline-color:transparent}}}
 .closed-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#fff;border-radius:16px;padding:10px 12px;margin:0 0 10px;font-weight:800;color:var(--red-d)}
 .closed-bar span{display:flex;align-items:center;gap:6px}.closed-bar .ic{width:18px;height:18px}
-body.coaching .pv{top:calc(var(--hud-h) + max(8px,env(safe-area-inset-top)) + var(--coach-h, 120px))}
+.coach.bottom{top:auto;bottom:calc(var(--tab-h) + env(safe-area-inset-bottom) + 10px)}
+
+/* ---------- 経営支援金・実績 ---------- */
+.help-card{display:flex;align-items:center;gap:10px;background:#fff4e0;border:2px solid var(--yellow);border-radius:16px;padding:10px 12px;margin-bottom:10px}
+.help-card .coin{width:34px;height:34px;flex:none}
+.help-card span{flex:1;min-width:0;display:flex;flex-direction:column}
+.help-card b{font-size:14px;color:var(--yellow-d)}.help-card small{font-size:12px;color:var(--ink)}
+.hud-money.minus b{color:var(--red-d)}
+.ach-list{list-style:none;margin:0;padding:0}
+.ach{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:2px solid var(--line)}
+.ach:last-child{border-bottom:0}
+.ach-ic .ill{width:30px;height:30px}.ach:not(.done) .ach-ic{opacity:.45}
+.ach-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.ach-main b{font-size:14px}.ach-main small{font-size:12px;color:var(--muted)}
+.ach-main .bar{margin-top:3px}
+.ach-prog{font-size:11px !important}
+.ach-rw,.ach-btn{display:flex;align-items:center;gap:4px;flex:none;font-weight:900;font-size:13px}
+.ach-rw{color:var(--muted)}.ach-rw .coin,.ach-btn .coin{width:16px;height:16px}
+.ach-btn{padding:8px 12px}
+.ach-got{font-style:normal;font-size:12px;font-weight:800;color:var(--muted)}
+.ach.claimed{opacity:.6}
+.wtitle .badge{position:static;display:inline-block;margin-left:4px;min-width:18px;height:18px;border-radius:9px;background:var(--red);color:#fff;font:900 11px/18px sans-serif;font-style:normal;text-align:center;padding:0 4px}
+.ach-count{margin-left:auto;font-size:12px;color:var(--muted);font-weight:700}

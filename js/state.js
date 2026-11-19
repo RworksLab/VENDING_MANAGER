@@ -96,6 +96,8 @@ export function createInitialState(now = Date.now()) {
   return {
     schema: SCHEMA_VERSION,
     tutorial: { step: 'buy' },   // チュートリアルの進み具合（coach.js）
+    achievements: { claimed: [], notified: [] },   // 実績（rewards.js）
+    support: null,               // 経営支援金を最後に受け取った日
     money: BALANCE.initialMoney,
     stats: { totalSales: 0, totalUnits: 0, totalCost: 0, totalUpkeep: 0 },
     today: { date: dateKey(now), sales: 0, units: 0, byMachine: {} },

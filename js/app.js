@@ -29,6 +29,7 @@ import { closeSheet, openSheet, toast } from './ui.js';
 import { registerSW, systemNotify, setBadge } from './notify.js';
 import { initAudio, se } from './audio.js';
 import { initCoach } from './coach.js';
+import { noticeNewAchievements } from './rewards.js';
 import { initUpdateCheck } from './update.js';
 
 const TABS = [
@@ -63,7 +64,7 @@ function resolve(hash) {
     // ショップは自販機に、経営・イベントはホームに統合
     case 'shop': return { tab: 'shop', html: shop.renderShop, mount: shop.mountShop };
     case 'buy-machine': return { tab: 'shop', html: shop.renderBuyMachine, mount: shop.mountBuyMachine };
-    case 'stats': return { tab: 'home', html: stats.render };
+    case 'stats': return { tab: 'home', html: stats.render, mount: (el) => stats.mount(el) };
     case 'events': return { tab: 'home', html: eventsPage.render };
     case 'more': case 'settings': return { tab: 'home', html: more.renderSettings, mount: more.mountSettings };
     default: return { tab: 'home', html: home.render, mount: home.mount };
@@ -123,7 +124,7 @@ function renderBackdrop(locationId, weather) {
 function renderHud(s) {
   document.getElementById('hud').innerHTML = `
     <a class="hud-title" href="#home">${ill('machine')}<span>自販機マネジャー</span></a>
-    <div class="hud-money">${coin()}<b>${yen(s.money).slice(1)}</b><small>円</small></div>`;
+    <div class="hud-money ${s.money < 0 ? 'minus' : ''}">${coin()}<b>${yen(s.money).slice(1)}</b><small>円</small></div>`;
 }
 
 async function boot() {
@@ -146,7 +147,9 @@ async function boot() {
   // ラベル画像は本体の後から読み込み、揃ったら描き直す
   preloadImages(s).then((got) => got && render());
   tick({ welcome: true });
-  initCoach(subscribe);                            // 操作しながら進むチュートリアル
+  initCoach(subscribe);
+  subscribe(() => setTimeout(noticeNewAchievements, 0));   // 実績の達成をお知らせ
+  noticeNewAchievements();                            // 操作しながら進むチュートリアル
   setInterval(() => tick(), 60 * 1000);   // 開いている間も1分ごとに販売を進める
 }
 
