@@ -171,6 +171,7 @@ export function buyMachine(locId, color) {
   update((st) => {
     const n = st.machines.length + 1;
     const m = makeMachine({ name: `${n}号機`, locationId: locId, modelId: 'standard', color });
+    if (st.tutorial?.step && st.tutorial.step !== 'done') m.open = false;   // チュートリアル中は「営業開始」まで止めておく
     st.machines.push(m);
     st.money -= cost;
     st.stats.totalInvest = (st.stats.totalInvest || 0) + cost;
@@ -210,4 +211,32 @@ export function buyUpgrade(machineId, upId) {
     st.stats.totalInvest = (st.stats.totalInvest || 0) + cost;
   });
   return true;
+}
+
+/** 自販機の営業を始める */
+export function openMachine(id) {
+  update((st) => { const m = st.machines.find((x) => x.id === id); if (m) m.open = true; });
+}
+
+/** チュートリアルの「初めての販売」：在庫のある枠から1本売る */
+export function tutorialSale() {
+  let r = null;
+  update((st) => {
+    const m = st.machines.find((x) => x.open && x.slots.some((sl) => sl.item && sl.stock > 0));
+    if (!m) return;
+    const sl = m.slots.find((x) => x.item && x.stock > 0);
+    sl.stock -= 1;
+    const yenAmt = sl.price;
+    m.totalSales += yenAmt; m.totalUnits += 1;
+    st.money += yenAmt;
+    st.stats.totalSales += yenAmt; st.stats.totalUnits += 1;
+    st.today.sales += yenAmt; st.today.units += 1;
+    const bm = st.today.byMachine[m.id] || (st.today.byMachine[m.id] = { sales: 0, units: 0 });
+    bm.sales += yenAmt; bm.units += 1;
+    const p = st.products.find((x) => x.id === sl.item.productId);
+    if (p) { p.sold += 1; p.revenue += yenAmt; }
+    st.salesLog.unshift({ at: Date.now(), machineId: m.id, units: 1, sales: yenAmt });
+    r = { name: sl.item.name, units: 1, sales: yenAmt, machineId: m.id };
+  });
+  return r;
 }

@@ -28,7 +28,7 @@ import { sceneSVG, timeOfDay } from './render/art.js';
 import { closeSheet, openSheet, toast } from './ui.js';
 import { registerSW, systemNotify, setBadge } from './notify.js';
 import { initAudio, se } from './audio.js';
-import { showTutorial } from './views/tutorial.js';
+import { initCoach } from './coach.js';
 import { initUpdateCheck } from './update.js';
 
 const TABS = [
@@ -47,7 +47,7 @@ function resolve(hash) {
     const id = h.slice(13);
     return { tab: 'products', html: (s) => productEdit.render(s, id), mount: (el, s) => productEdit.mount(el, s, id) };
   }
-  if (h.startsWith('machine-')) return { tab: 'machines', html: (s) => machines.renderDetail(s, h.slice(8)) };
+  if (h.startsWith('machine-')) return { tab: 'machines', html: (s) => machines.renderDetail(s, h.slice(8)), mount: (el) => machines.mountDetail(el) };
   // 自販機の操作ページ（補充・回収／並び替え／価格変更）
   for (const [prefix, mod] of [['refill-', refillPage], ['arrange-', arrangePage], ['price-', pricePage],
     ['move-', { render: shop.renderMove, mount: shop.mountMove }], ['upgrade-', { render: shop.renderUpgrade, mount: shop.mountUpgrade }]]) {
@@ -146,7 +146,7 @@ async function boot() {
   // ラベル画像は本体の後から読み込み、揃ったら描き直す
   preloadImages(s).then((got) => got && render());
   tick({ welcome: true });
-  if (!getState().tutorialDone) showTutorial();   // 初めての人にはチュートリアル
+  initCoach(subscribe);                            // 操作しながら進むチュートリアル
   setInterval(() => tick(), 60 * 1000);   // 開いている間も1分ごとに販売を進める
 }
 

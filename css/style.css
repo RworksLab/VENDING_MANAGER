@@ -903,3 +903,22 @@ body{font-size:15px}
 .update-bar small{font-size:12px;font-weight:700;opacity:.85}
 .update-bar:active{transform:translateX(-50%) scale(.97)}
 @media(prefers-reduced-motion:no-preference){.update-bar{animation:ub .35s ease-out}@keyframes ub{from{opacity:0;transform:translate(-50%,-12px)}}}
+
+/* ---------- 操作しながら進むチュートリアル ---------- */
+body.coaching .view{padding-top:calc(var(--hud-h) + max(10px,env(safe-area-inset-top)) + var(--coach-h, 120px))}
+.coach{position:fixed;z-index:30;left:10px;right:10px;top:calc(var(--hud-h) + env(safe-area-inset-top) + 6px);max-width:520px;margin:0 auto;
+  background:#fff;border:3px solid var(--blue);border-radius:18px;padding:10px 12px 12px;box-shadow:0 6px 18px rgba(29,43,85,.22)}
+@media(prefers-reduced-motion:no-preference){.coach{animation:coach-in .3s ease-out}@keyframes coach-in{from{opacity:0;transform:translateY(-12px)}}}
+.coach-head{display:flex;align-items:center;gap:8px}
+.coach-no{flex:none;background:var(--blue);color:#fff;font-size:11px;font-weight:900;border-radius:99px;padding:2px 8px}
+.coach-head b{flex:1;font-size:14px;font-weight:900;min-width:0}
+.coach-skip{border:0;background:none;color:var(--muted);font:inherit;font-size:12px;font-weight:700;cursor:pointer;padding:4px}
+.coach-text{margin:6px 0 0;font-size:13.5px;line-height:1.6;font-weight:700;color:var(--ink)}
+.coach-btns{display:flex;gap:8px;margin-top:8px}.coach-btns .btn{flex:1}
+.coach-dots{display:inline-flex;gap:3px;margin-right:6px;vertical-align:middle}.coach-dots i{width:6px;height:6px;border-radius:50%;background:var(--blue)}
+@media(prefers-reduced-motion:no-preference){.coach-dots i{animation:cd 1s infinite}.coach-dots i:nth-child(2){animation-delay:.15s}.coach-dots i:nth-child(3){animation-delay:.3s}@keyframes cd{50%{opacity:.25}}}
+.coach-target{outline:3px solid var(--yellow) !important;outline-offset:3px}
+@media(prefers-reduced-motion:no-preference){.coach-target{animation:ct 1.2s ease-in-out infinite}@keyframes ct{50%{outline-color:transparent}}}
+.closed-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#fff;border-radius:16px;padding:10px 12px;margin:0 0 10px;font-weight:800;color:var(--red-d)}
+.closed-bar span{display:flex;align-items:center;gap:6px}.closed-bar .ic{width:18px;height:18px}
+body.coaching .pv{top:calc(var(--hud-h) + max(8px,env(safe-area-inset-top)) + var(--coach-h, 120px))}

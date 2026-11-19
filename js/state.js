@@ -83,6 +83,7 @@ export function makeMachine({ name, locationId, modelId, color }, now = Date.now
     slots: Array.from({ length: model.slots }, () => emptySlot()),
     totalSales: 0,
     totalUnits: 0,
+    open: true,                   // 営業中か（チュートリアルの1台目は「営業開始」まで止まっている）
     createdAt: now,
   };
 }
@@ -90,33 +91,25 @@ export function makeMachine({ name, locationId, modelId, color }, now = Date.now
 export const emptySlot = () => ({ item: null, stock: 0, price: 0 });
 
 export function createInitialState(now = Date.now()) {
-  const products = STARTER_PRODUCTS.map((p) => makeProduct({ ...p, sample: true }, now));
-  const machine = makeMachine(BALANCE.starterMachine, now);
-  // お試し在庫：サンプル商品を交互に陳列
-  machine.slots.forEach((slot, i) => {
-    const p = products[i % products.length];
-    slot.item = snapshotOf(p);
-    slot.stock = BALANCE.starterStock;
-    slot.price = p.price;
-  });
+  // 新しいゲームは自販機も商品もない状態から、チュートリアルで1台目を買うところから始める
 
   return {
     schema: SCHEMA_VERSION,
-    tutorialDone: false,         // チュートリアルを見たか
+    tutorial: { step: 'buy' },   // チュートリアルの進み具合（coach.js）
     money: BALANCE.initialMoney,
     stats: { totalSales: 0, totalUnits: 0, totalCost: 0, totalUpkeep: 0 },
     today: { date: dateKey(now), sales: 0, units: 0, byMachine: {} },
     dailyHistory: [],            // [{date, sales, units}]（日替わり時に today を格納）
-    products,
+    products: [],
     warehouse: {},               // { [productId]: { qty, snap } }（STEP3）
-    machines: [machine],
+    machines: [],
     unlockedLocations: ['residential'],
     imageIds: [],                // 保存済みラベル画像の ID（images.js）
     purchaseHistory: [],         // STEP3
     salesLog: [],                // STEP4
     events: { calendar: {}, seed: Math.floor(Math.random() * 1e9) }, // STEP6
     notices: [
-      { id: uid('n'), at: now, text: 'ようこそ！まずは商品一覧と1号機を確認してみましょう。', read: false },
+      { id: uid('n'), at: now, text: 'ようこそ！まずは最初の自販機を買ってみましょう。', read: false },
     ],
     notifications: { enabled: true, soldOut: true, lowStock: true, events: true, sales: true, location: true, trouble: true },
     clock: { createdAt: now, lastSeenAt: now, lastSimAt: now, skewCount: 0 },
@@ -139,6 +132,8 @@ const MIGRATIONS = {
   2: (s) => MIGRATIONS[1](s),
   // v3 → v4：透明ボトル・キャップ・ラベル位置・サブカラー・文字スタイル
   3: (s) => MIGRATIONS[1](s),
+  // v4 → v5：操作しながら進むチュートリアル。すでに遊んでいるデータは完了扱い
+  4: (s) => { s.tutorial = { step: 'done' }; delete s.tutorialDone; s.machines.forEach((m) => { m.open ??= true; }); return s; },
 };
 
 export function migrate(raw) {

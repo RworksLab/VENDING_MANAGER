@@ -3,11 +3,11 @@
 // 数値はすべてここで調整する。他のファイルに数値を直書きしない。
 // =============================================================
 
-export const SCHEMA_VERSION = 4;
+export const SCHEMA_VERSION = 5;
 export const SAVE_KEY = 'vending-sim/save/v1';
 
 export const BALANCE = {
-  initialMoney: 10000,          // 初期資金（仮）
+  initialMoney: 30000,          // 初期資金：1台目の自販機（住宅街 ¥23,000）＋最初の仕入れぶん
   starterMachine: { name: '1号機', locationId: 'residential', modelId: 'standard' },
   starterStock: 8,              // 初期自販機に入っているお試し在庫（本/スロット）
   lowStockRatio: 0.25,          // 収納上限に対してこの割合以下で「残りわずか」

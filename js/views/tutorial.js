@@ -50,7 +50,6 @@ function slides() {
 export function showTutorial() {
   const list = slides();
   let i = 0;
-  update((s) => { s.tutorialDone = true; });   // 一度開いたら次回からは出さない（途中で閉じても）
   const draw = (root) => {
     const sl = list[i];
     root.innerHTML = `<div class="tt">

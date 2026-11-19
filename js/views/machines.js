@@ -6,6 +6,9 @@ import { effectsForLocation } from '../events.js';
 import { yen, num, esc, fmtDateTime } from '../util.js';
 import { pageHead, locPill } from './parts.js';
 import { expectedPerHour, isDown, upkeepOf } from '../sim.js';
+import { openMachine } from '../actions.js';
+import { toast } from '../ui.js';
+import { se } from '../audio.js';
 
 const yesterdayDiff = (s, id) => {
   const prev = s.dailyHistory[s.dailyHistory.length - 1];
@@ -74,8 +77,9 @@ export function renderDetail(s, id) {
   const evRow = `<a class="ev-row" href="#events">${weatherIcon(ev.weather.id)}<b>${esc(ev.weather.name)}</b>
     ${ev.events.map((e) => `<em class="chip-ev ${e.scale}">${esc(e.name)}</em>`).join('')}
     <span class="ev-traffic ${ev.traffic > 1.01 ? 'up' : ev.traffic < 0.99 ? 'down' : ''}">${ev.traffic > 1.01 ? '人通り↑' : ev.traffic < 0.99 ? '人通り↓' : ''}</span></a>`;
+  const closed = m.open === false ? `<div class="closed-bar"><span>${icon('alert')}営業していません</span><button class="btn primary" id="open-btn" data-open="${m.id}">営業開始</button></div>` : '';
   return `${pageHead({ title: '自販機詳細', ic: 'machine', back: '#machines', right: locPill(loc.name + 'エリア') })}
-  ${down}${evRow}
+  ${down}${closed}${evRow}
   <div class="detail">
     <div class="stage"><div class="stage-machine">${machineSVG(m)}</div></div>
     <div class="detail-side">
@@ -106,3 +110,11 @@ export function renderDetail(s, id) {
   </section>`;
 }
 
+
+export function mountDetail(el) {
+  el.querySelector('#open-btn')?.addEventListener('click', (e) => {
+    openMachine(e.currentTarget.dataset.open);
+    se('success');
+    toast('営業を開始しました');
+  });
+}

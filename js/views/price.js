@@ -10,6 +10,7 @@ import { esc, yen } from '../util.js';
 import { toast } from '../ui.js';
 import { pageHead, locPill } from './parts.js';
 import { se } from '../audio.js';
+import { notePriced } from '../coach.js';
 
 const clamp = (v) => Math.min(PRODUCT_FORM.priceMax, Math.max(PRODUCT_FORM.priceMin, Math.round(Number(v) || 0)));
 const hint = (v) => PRICE_HINTS.find((h) => v <= h.max).text;
@@ -75,6 +76,7 @@ export function mount(el, s, id) {
         Object.entries(draft).forEach(([i, p]) => { if (m.slots[i]?.item) m.slots[i].price = p; });
       });
       se('confirm');
+      notePriced();
       toast(`${n}か所の価格を変更しました`);
     }
   });

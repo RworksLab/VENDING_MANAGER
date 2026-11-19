@@ -107,6 +107,7 @@ export function runSimulation(now = Date.now()) {
       const at = t + TICK / 2;                                    // 刻みの中央の時刻で需要を決める
       const day = dayBucket(st, at);
       for (const m of st.machines) {
+        if (m.open === false) continue;           // 営業開始前（チュートリアル中）
         // 維持費（日割り）。端数は持ち越して円単位で引く
         const fee = upkeepOf(m, at, st).total / ticksPerDay;
         st.upkeepCarry = (st.upkeepCarry || 0) + fee;
