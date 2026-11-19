@@ -102,6 +102,7 @@ export function createInitialState(now = Date.now()) {
 
   return {
     schema: SCHEMA_VERSION,
+    tutorialDone: false,         // チュートリアルを見たか
     money: BALANCE.initialMoney,
     stats: { totalSales: 0, totalUnits: 0, totalCost: 0, totalUpkeep: 0 },
     today: { date: dateKey(now), sales: 0, units: 0, byMachine: {} },

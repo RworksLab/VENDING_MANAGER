@@ -28,6 +28,7 @@ import { sceneSVG, timeOfDay } from './render/art.js';
 import { closeSheet, openSheet, toast } from './ui.js';
 import { registerSW, systemNotify, setBadge } from './notify.js';
 import { initAudio, se } from './audio.js';
+import { showTutorial } from './views/tutorial.js';
 
 const TABS = [
   { id: 'home', label: 'ホーム', icon: 'home' },
@@ -143,6 +144,7 @@ async function boot() {
   // ラベル画像は本体の後から読み込み、揃ったら描き直す
   preloadImages(s).then((got) => got && render());
   tick({ welcome: true });
+  if (!getState().tutorialDone) showTutorial();   // 初めての人にはチュートリアル
   setInterval(() => tick(), 60 * 1000);   // 開いている間も1分ごとに販売を進める
 }
 

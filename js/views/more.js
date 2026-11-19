@@ -7,6 +7,7 @@ import { NOTIFY } from '../config.js';
 import { permission, requestPermission } from '../notify.js';
 import { pageHead } from './parts.js';
 import { getAudioPrefs, setAudioPrefs, se } from '../audio.js';
+import { showTutorial } from './tutorial.js';
 
 // ----- 準備中の画面 -----
 const PLANNED = {
@@ -33,6 +34,7 @@ let unsubStatus = null;
 export function renderSettings(s) {
   return `${pageHead({ title: '設定', ic: 'gear', back: '#home' })}
   <div class="narrow">
+  <button class="btn wide tt-open" id="tt-open">${icon('star')}遊び方を見る</button>
   ${soundSection()}
   ${notifySection(s)}
   <section class="wcard"><h2 class="wtitle">${icon('bell')}お知らせ</h2>
@@ -82,6 +84,7 @@ function notifySection(s) {
 }
 
 export function mountSettings(el, s) {
+  el.querySelector('#tt-open')?.addEventListener('click', () => showTutorial());
   el.querySelectorAll('[data-snd]').forEach((c) => c.addEventListener('change', () => {
     setAudioPrefs({ [c.dataset.snd]: c.checked });
     c.closest('.sw-row').nextElementSibling.classList.toggle('off', !c.checked);

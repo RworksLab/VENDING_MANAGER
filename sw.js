@@ -5,7 +5,7 @@
 //  - サーバーからのプッシュ通知（push イベント）を受け取って表示する受け口
 // ファイルを更新したら VERSION を上げる
 // =============================================================
-const VERSION = 'v3';
+const VERSION = 'v4';
 const CACHE = `vending-sim-${VERSION}`;
 const SHELL = [
   './', './index.html', './manifest.webmanifest', './css/style.css',
@@ -14,7 +14,7 @@ const SHELL = [
   './js/render/art.js', './js/render/map.js',
   './js/views/home.js', './js/views/machines.js', './js/views/products.js', './js/views/productEdit.js', './js/views/more.js',
   './js/views/warehouse.js', './js/views/refill.js', './js/views/arrange.js', './js/views/price.js', './js/views/slotgrid.js',
-  './js/views/parts.js', './js/views/shop.js', './js/views/stats.js', './js/views/events.js',
+  './js/views/parts.js', './js/views/shop.js', './js/views/stats.js', './js/views/events.js', './js/views/tutorial.js',
   './icons/icon.svg', './icons/icon-192.png', './icons/icon-512.png', './icons/badge-96.png',
 ];
 
