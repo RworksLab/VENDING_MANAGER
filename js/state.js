@@ -115,7 +115,7 @@ export function createInitialState(now = Date.now()) {
     ],
     notifications: { enabled: true, soldOut: true, lowStock: true, events: true, sales: true, location: true, trouble: true },
     clock: { createdAt: now, lastSeenAt: now, lastSimAt: now, skewCount: 0 },
-    meta: { savedAt: now, saveCount: 0 },
+    meta: { savedAt: now, saveCount: 0, compensation: '2026-11-20' },   // 補填は始める前の値段変更ぶんなので対象外
   };
 }
 

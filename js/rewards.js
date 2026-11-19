@@ -1,7 +1,7 @@
 // =============================================================
 // 報酬：実績の達成チェックと受け取り、所持金ピンチのときの経営支援金
 // =============================================================
-import { ACHIEVEMENTS, SUPPORT } from './config.js';
+import { ACHIEVEMENTS, SUPPORT, SHOP, findLocation, upgradeCost, UPGRADES } from './config.js';
 import { getState, update, addNotice } from './state.js';
 
 const box = (s) => s.achievements || { claimed: [], notified: [] };
@@ -69,4 +69,42 @@ export function claimSupport() {
     addNotice(s, `経営支援金 ¥${amt.toLocaleString('ja-JP')} を受け取りました`);
   });
   return amt;
+}
+
+// ---------- バランス調整の補填（2026/11/19〜20 の値段変更） ----------
+//  すでに遊んでいた人に一度だけ：今の値段で買い直した額より多く払っていた分を返し、お詫びを一律で渡す
+export const COMPENSATION = { id: '2026-11-20', bonus: 20000, newFlowSince: Date.parse('2026-11-19T12:30:00Z') };
+
+/** 今持っている自販機・場所・強化を、今の値段で買い直したときの額 */
+function costAtNewPrices(s) {
+  const firstBought = (s.clock?.createdAt || 0) >= COMPENSATION.newFlowSince;   // チュートリアルで1台目を買った人
+  const ms = [...s.machines].sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
+  let total = 0;
+  ms.forEach((m, i) => {
+    if (i === 0 && !firstBought) return;                                         // 昔は1台目が無料だった
+    total += SHOP.machinePrices[Math.min(i, SHOP.machinePrices.length - 1)] + findLocation(m.locationId).installCost;
+    for (const u of UPGRADES) for (let lv = 0; lv < (m.upgrades?.[u.id] || 0); lv++) total += upgradeCost(u.id, lv);
+  });
+  if (!firstBought && ms[0]) for (const u of UPGRADES) for (let lv = 0; lv < (ms[0].upgrades?.[u.id] || 0); lv++) total += upgradeCost(u.id, lv);
+  total += s.unlockedLocations.filter((id) => id !== 'residential').reduce((a, id) => a + findLocation(id).unlockCost, 0);
+  return total;
+}
+
+/** 補填の対象なら金額の内訳を返す（対象外は null） */
+export function compensationFor(s = getState()) {
+  if (!s || s.meta?.compensation === COMPENSATION.id) return null;
+  if (!s.machines.length || (s.tutorial?.step && s.tutorial.step !== 'done')) return null;
+  const refund = Math.max(0, Math.round(((s.stats.totalInvest || 0) - costAtNewPrices(s)) / 100) * 100);
+  return { refund, bonus: COMPENSATION.bonus, total: refund + COMPENSATION.bonus };
+}
+
+export function claimCompensation() {
+  const c = compensationFor();
+  if (!c) return null;
+  update((s) => {
+    s.meta.compensation = COMPENSATION.id;
+    s.money += c.total;
+    addNotice(s, `バランス調整の補填 ¥${c.total.toLocaleString('ja-JP')} を受け取りました（払い戻し ¥${c.refund.toLocaleString('ja-JP')}＋お詫び ¥${c.bonus.toLocaleString('ja-JP')}）`);
+  });
+  return c;
 }

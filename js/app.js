@@ -29,7 +29,7 @@ import { closeSheet, openSheet, toast } from './ui.js';
 import { registerSW, systemNotify, setBadge } from './notify.js';
 import { initAudio, se } from './audio.js';
 import { initCoach } from './coach.js';
-import { noticeNewAchievements } from './rewards.js';
+import { noticeNewAchievements, compensationFor, claimCompensation } from './rewards.js';
 import { initUpdateCheck } from './update.js';
 
 const TABS = [
@@ -151,6 +151,7 @@ async function boot() {
   preloadImages(s).then((got) => got && render());
   tick({ welcome: true });
   initCoach(subscribe);
+  showCompensation();                              // すでに遊んでいた人への補填（一度だけ）
   subscribe(() => setTimeout(noticeNewAchievements, 0));   // 実績の達成をお知らせ
   noticeNewAchievements();                            // 操作しながら進むチュートリアル
   setInterval(() => tick(), 60 * 1000);   // 開いている間も1分ごとに販売を進める
@@ -207,6 +208,24 @@ function showWelcome(r) {
     ${r.soldOut.length ? `<div class="wb-out"><b>売り切れ</b>${r.soldOut.slice(0, 6).map((x) => `<span>${esc(x)}</span>`).join('')}${r.soldOut.length > 6 ? `<span>ほか${r.soldOut.length - 6}件</span>` : ''}</div>` : ''}
     <button class="btn primary wide" data-close>OK</button></div>`);
   se('welcome');
+}
+
+// すでに遊んでいた人への補填（一度だけ）
+function showCompensation() {
+  const c = compensationFor();
+  if (!c) return;
+  openSheet(`<div class="welcome">
+    ${coin('wb-coin')}
+    <h2 class="sheet-title">バランス調整のお詫び</h2>
+    <p class="muted">遊びやすさを見直すため、自販機や設置場所の値段・売れるスピードを変更しました。前の値段で購入していた分の差額と、お詫びをお届けします。</p>
+    <div class="wb-nums"><div><small>差額の払い戻し</small><b>+${yen(c.refund)}</b></div><div><small>お詫び</small><b>+${yen(c.bonus)}</b></div></div>
+    <button class="btn primary wide" id="comp-get">${yen(c.total)} を受け取る</button></div>`, {
+    onMount(sheet) {
+      const get = () => { if (claimCompensation()) { se('buy'); toast(`${yen(c.total)} を受け取りました`); } closeSheet(); };
+      sheet.querySelector('#comp-get').addEventListener('click', get);
+      sheet.querySelector('.sheet-x')?.addEventListener('click', get);
+    },
+  });
 }
 
 // マップのピンから「+¥」を浮かび上がらせる
