@@ -17,11 +17,21 @@ const TICK = SIM.tickMinutes * 60 * 1000;
 
 /** 適正価格（ジャンル・内容量・場所で決まる） */
 export const refPrice = (item, loc) => fairPrice(item.genre, item.volume, loc.spendMul);
-/** 価格による売れ行きの倍率。適正価格より高いと急に落ちる */
-export const priceFactor = (price, item, loc) => {
-  const r = refPrice(item, loc) / Math.max(10, price);
+/** 混み具合による「高くても買う」度合い（1 が基準） */
+export const toleranceOf = (crowd) => Math.min(SIM.crowdToleranceMax, Math.max(SIM.crowdToleranceMin, 1 + SIM.crowdTolerance * (crowd - 1)));
+/** 価格による売れ行きの倍率。受け入れられる値段（適正価格 × 混み具合）より高いと急に落ちる */
+export const priceFactor = (price, item, loc, crowd = 1) => {
+  const r = (refPrice(item, loc) * toleranceOf(crowd)) / Math.max(10, price);
   return Math.min(3, r ** (r >= 1 ? SIM.priceElasticityLow : SIM.priceElasticityHigh));
 };
+
+/** その自販機の今の混み具合（人通り。1 が基準） */
+export function crowdAt(m, at = Date.now(), s = getState()) {
+  const loc = findLocation(m.locationId);
+  const h = new Date(at).getHours();
+  const night = h >= 22 || h < 6;
+  return HOURLY_TRAFFIC[h] * loc.trafficMul * (night ? NIGHT_LOCATION[loc.id] ?? 1 : 1) * factorsAt(s, at).traffic(loc.id);
+}
 
 /** 1スロットの期待販売数（本/時）。乱数なし。画面の目安表示にも使う */
 export function expectedPerHour(m, slotIndex, at = Date.now(), s = getState()) {
@@ -42,7 +52,7 @@ export function expectedPerHour(m, slotIndex, at = Date.now(), s = getState()) {
   const fx = factorsAt(s, at);
   const event = fx.traffic(loc.id) * fx.sales(loc.id) * fx.genre(g) * fx.temp(sl.item.temp)
     * (h >= 18 && h < 22 ? fx.evening(loc.id) : 1) * ((m.upgrades?.ecash || 0) > 0 ? fx.ecash : 1);
-  return SIM.basePerHour * traffic * affinity * band * season * priceFactor(sl.price, sl.item, loc) * popF
+  return SIM.basePerHour * traffic * affinity * band * season * priceFactor(sl.price, sl.item, loc, traffic * fx.traffic(loc.id)) * popF
     * slotBonusOf(m.modelId, slotIndex, sl.item) * upgradeFactor(m) * event;
 }
 

@@ -228,6 +228,10 @@ export const SIM = {
   noise: 0.15,              // ±15% のゆらぎ（仕様書 9-4）
   priceElasticityLow: 1.2,  // 適正価格より安いとき：安くするほど少しずつ売れやすくなる
   priceElasticityHigh: 3.5, // 適正価格より高いとき：急に売れにくくなる（適正価格がいちばん儲かる）
+  // 混み具合（人通り）で「高くても買う」度合いが変わる：受け入れられる値段 ＝ 適正価格 ×（1 ＋ crowdTolerance ×（人通り − 1））
+  crowdTolerance: 0.18,
+  crowdToleranceMin: 0.92,  // とても空いているとき（深夜など）は適正価格の 92% くらいが売れやすい
+  crowdToleranceMax: 1.25,  // とても混んでいるとき（駅前の朝など）は 25% 高くても売れやすい
   welcomeBackMinutes: 30,   // これ以上空けて戻ると「留守中の売上」を表示
   salesLogMax: 200,
 };

@@ -4,7 +4,7 @@
 // =============================================================
 import { getState, update } from '../state.js';
 import { PRODUCT_FORM, priceHintOf, findLocation } from '../config.js';
-import { expectedPerHour, refPrice } from '../sim.js';
+import { expectedPerHour, refPrice, crowdAt, toleranceOf } from '../sim.js';
 import { drinkSVG } from '../render/art.js';
 import { esc, yen } from '../util.js';
 import { toast } from '../ui.js';
@@ -19,6 +19,9 @@ export function render(s, id) {
   const m = s.machines.find((x) => x.id === id);
   if (!m) return '<p class="empty">自販機が見つかりません <a href="#machines">戻る</a></p>';
   if (ui.id !== id) { ui.id = id; ui.draft = {}; }
+  const tol = toleranceOf(crowdAt(m, Date.now(), s));
+  const crowdNote = tol > 1.03 ? `今は人通りが多く、適正価格より${Math.round((tol - 1) * 100)}%ほど高くても売れやすい時間です`
+    : tol < 0.97 ? '今は人通りが少なく、適正価格より少し安いほうが売れやすい時間です' : '今の人通りはふつうです';
   const rows = m.slots.map((sl, i) => {
     if (!sl.item) return '';
     const price = ui.draft[i] ?? sl.price;
@@ -41,6 +44,7 @@ export function render(s, id) {
   const changed = Object.keys(ui.draft).length;
   return `${pageHead({ title: '価格変更', ic: 'machine', back: `#machine-${id}`, right: locPill(`${m.name}・${findLocation(m.locationId).name}`) })}
   <div class="op-page" id="op">
+    <p class="pr-crowd ${tol > 1.03 ? 'up' : tol < 0.97 ? 'down' : ''}">${crowdNote}</p>
     <label class="chk pr-same"><input type="checkbox" data-same ${ui.same ? 'checked' : ''}>同じ商品のスロットにもまとめて適用</label>
     <section class="wcard list-card"><div class="rf-list">${rows || '<p class="empty">陳列中の商品がありません</p>'}</div></section>
     <div class="page-foot">
