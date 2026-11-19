@@ -20,7 +20,7 @@ body[data-tod=night]{--ground:#4a5276;--sky:#1f2b5c}
 body[data-tod=evening]{--sky:#ffa77d}
 body[data-tod=dawn]{--sky:#9cc9f2}
 *{box-sizing:border-box;min-width:0}
-html{-webkit-text-size-adjust:100%}
+html{-webkit-text-size-adjust:100%;touch-action:manipulation}  /* ダブルタップでの拡大を止める */
 body{margin:0;min-height:100vh;position:relative;color:var(--ink);background:var(--page);overflow-x:clip;-webkit-tap-highlight-color:transparent;
   font:16px/1.5 "M PLUS Rounded 1c","Hiragino Maru Gothic ProN",system-ui,sans-serif;font-weight:700}
 a{color:inherit;text-decoration:none}
@@ -946,3 +946,5 @@ body{font-size:15px}
 .ach.claimed{opacity:.6}
 .wtitle .badge{position:static;display:inline-block;margin-left:4px;min-width:18px;height:18px;border-radius:9px;background:var(--red);color:#fff;font:900 11px/18px sans-serif;font-style:normal;text-align:center;padding:0 4px}
 .ach-count{margin-left:auto;font-size:12px;color:var(--muted);font-weight:700}
+/* ダブルタップ拡大の防止（ボタン類にも明示） */
+a,button,input,select,textarea,label,.slot,.sg-cell{touch-action:manipulation}
