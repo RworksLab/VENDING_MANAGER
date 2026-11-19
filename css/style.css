@@ -894,3 +894,12 @@ body{font-size:15px}
 .tt-dots{display:flex;gap:6px;margin:4px 0 6px}.tt-dots i{width:8px;height:8px;border-radius:50%;background:#d5e0f0}.tt-dots i.on{background:var(--blue);width:20px;border-radius:4px}
 .tt .row-btns{width:100%}
 .tt-open{margin-bottom:12px}
+
+/* ---------- アップデートのお知らせ ---------- */
+.update-bar{position:fixed;z-index:40;left:50%;top:calc(var(--hud-h) + env(safe-area-inset-top) + 8px);transform:translateX(-50%);
+  display:flex;align-items:center;gap:8px;max-width:calc(100% - 24px);padding:10px 16px;border:0;border-radius:99px;background:var(--blue);color:#fff;
+  font:inherit;font-weight:900;font-size:14px;cursor:pointer;box-shadow:0 4px 12px rgba(29,43,85,.25);white-space:nowrap}
+.update-bar .ic{width:18px;height:18px;flex:none}
+.update-bar small{font-size:12px;font-weight:700;opacity:.85}
+.update-bar:active{transform:translateX(-50%) scale(.97)}
+@media(prefers-reduced-motion:no-preference){.update-bar{animation:ub .35s ease-out}@keyframes ub{from{opacity:0;transform:translate(-50%,-12px)}}}

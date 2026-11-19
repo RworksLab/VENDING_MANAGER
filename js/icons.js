@@ -6,6 +6,7 @@ const P = {
   warehouse: 'M3 21V9l9-6 9 6v12M7 21v-8h10v8M7 17h10',
   grid: 'M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z',
   bell: 'M6 16v-5a6 6 0 1 1 12 0v5l2 2H4zM10 21h4',
+  refresh: 'M20 12a8 8 0 1 1-2.4-5.7M20 4v5h-5',
   music: 'M9 18V5l11-2v13M9 18a3 3 0 1 1-6 0 3 3 0 0 1 6 0zM20 16a3 3 0 1 1-6 0 3 3 0 0 1 6 0z',
   calendar: 'M4 6h16v15H4zM4 10h16M8 3v4M16 3v4',
   chart: 'M4 20V11M10 20V5M16 20v-6M2 20h20',
