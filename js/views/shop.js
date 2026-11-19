@@ -5,7 +5,7 @@
 import { getState } from '../state.js';
 import { MACHINE_COLORS, MACHINE_MODELS, LOCATIONS, BALANCE, TRAFFIC_WORD, UPGRADES, upgradeCost, findLocation, SHOP, UPKEEP } from '../config.js';
 import {
-  canUnlock, unlockLocation, buyMachine, relocate, buyUpgrade, machinePriceAt, relocateCost,
+  canUnlock, unlockLocation, buyMachine, relocate, buyUpgrade, machinePriceAt, relocateCost, nextMachineBody,
 } from '../actions.js';
 import { upkeepOf } from '../sim.js';
 import { machineSVG } from '../render/art.js';
@@ -20,7 +20,7 @@ const locLine = (l) => `<span class="loc-info"><small>人通り ${TRAFFIC_WORD[l
 // ---------- ショップ ----------
 export function renderShop(s) {
   const full = s.machines.length >= BALANCE.maxMachines;
-  const cheapest = Math.min(...s.unlockedLocations.map(machinePriceAt));
+  const cheapest = Math.min(...s.unlockedLocations.map((id) => machinePriceAt(id)));
   const locs = LOCATIONS.map((l) => {
     const open = s.unlockedLocations.includes(l.id);
     const c = canUnlock(s, l.id);
@@ -94,7 +94,7 @@ export function renderBuyMachine(s) {
         <div class="swatches" id="bc-swatches">${MACHINE_COLORS.map((c) => `<button type="button" class="sw" style="--c:${c.hex}" data-color="${c.hex}" data-name="${c.name}" aria-pressed="${c.hex === buyColor}" aria-label="${c.name}"></button>`).join('')}
           <label class="sw custom" aria-label="自由に選ぶ"><input type="color" id="bc-custom" value="${buyColor}"><span>＋</span></label></div></div>
     </section>
-    <p class="ar-help">設置する場所を選んでください（本体 ${yen(SHOP.machinePrice)} ＋ 設置費用）</p>
+    <p class="ar-help">設置する場所を選んでください（本体 ${yen(nextMachineBody(s))} ＋ 設置費用）</p>
     <div class="pick-list">${locPicker(s, { costOf: machinePriceAt })}</div>`}
   </div>`;
 }

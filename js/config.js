@@ -7,12 +7,12 @@ export const SCHEMA_VERSION = 5;
 export const SAVE_KEY = 'vending-sim/save/v1';
 
 export const BALANCE = {
-  initialMoney: 75000,          // 初期資金：1台目の自販機（住宅街 ¥57,500）＋最初の仕入れぶん
+  initialMoney: 75000,          // 初期資金：1台目の自販機（住宅街 ¥55,000）＋最初の仕入れぶん
   starterMachine: { name: '1号機', locationId: 'residential', modelId: 'standard' },
   starterStock: 8,              // 初期自販機に入っているお試し在庫（本/スロット）
   lowStockRatio: 0.25,          // 収納上限に対してこの割合以下で「残りわずか」
   maxNotices: 30,
-  maxMachines: 5,               // 所有できる自販機の上限（仮）
+  maxMachines: 8,               // 所有できる自販機の上限
 };
 
 // 自販機の機種
@@ -46,12 +46,12 @@ export const MACHINE_MODELS = {
 
 // 設置場所（仕様書 7-2）。数値はゲーム内相対値（STEP5 で使用）
 export const LOCATIONS = [
-  { id: 'residential', name: '住宅街',     traffic: '中', spend: '低', note: '安定した需要', likes: '水・お茶',       trafficMul: 1.0, spendMul: 0.9, upkeepPerDay: 750, unlockCost: 0, installCost: 7500, requiredSales: 0 },
-  { id: 'station',     name: '駅前',       traffic: '高', spend: '中', note: '販売回転率が高い', likes: 'コーヒー・炭酸飲料',   trafficMul: 1.5, spendMul: 1.0, upkeepPerDay: 2000, unlockCost: 125000, installCost: 25000, requiredSales: 150000 },
-  { id: 'office',      name: 'オフィス街', traffic: '高', spend: '高', note: 'コーヒー需要', likes: 'コーヒー・お茶',       trafficMul: 1.4, spendMul: 1.2, upkeepPerDay: 2250, unlockCost: 200000, installCost: 30000, requiredSales: 300000 },
-  { id: 'park',        name: '公園',       traffic: '中', spend: '中', note: '天候の影響が大きい', likes: '炭酸飲料・ジュース', trafficMul: 1.1, spendMul: 1.0, upkeepPerDay: 1000, unlockCost: 75000, installCost: 12500, requiredSales: 50000 },
-  { id: 'tourist',     name: '観光地',     traffic: '高', spend: '高', note: '高価格でも売れやすい', likes: '水・ジュース', trafficMul: 1.5, spendMul: 1.4, upkeepPerDay: 3000, unlockCost: 375000, installCost: 50000, requiredSales: 625000 },
-  { id: 'school',      name: '学校付近',   traffic: '高', spend: '低', note: '甘い飲み物が人気', likes: '甘い飲み物・炭酸飲料',   trafficMul: 1.3, spendMul: 0.85, upkeepPerDay: 1250, unlockCost: 100000, installCost: 15000, requiredSales: 100000 },
+  { id: 'residential', name: '住宅街',     traffic: '中', spend: '低', note: '安定した需要', likes: '水・お茶',       trafficMul: 1.0, spendMul: 0.9, upkeepPerDay: 750, unlockCost: 0, installCost: 5000, requiredSales: 0 },
+  { id: 'station',     name: '駅前',       traffic: '高', spend: '中', note: '販売回転率が高い', likes: 'コーヒー・炭酸飲料',   trafficMul: 1.5, spendMul: 1.0, upkeepPerDay: 2000, unlockCost: 60000, installCost: 15000, requiredSales: 100000 },
+  { id: 'office',      name: 'オフィス街', traffic: '高', spend: '高', note: 'コーヒー需要', likes: 'コーヒー・お茶',       trafficMul: 1.4, spendMul: 1.2, upkeepPerDay: 2250, unlockCost: 120000, installCost: 20000, requiredSales: 250000 },
+  { id: 'park',        name: '公園',       traffic: '中', spend: '中', note: '天候の影響が大きい', likes: '炭酸飲料・ジュース', trafficMul: 1.1, spendMul: 1.0, upkeepPerDay: 1000, unlockCost: 15000, installCost: 8000, requiredSales: 15000 },
+  { id: 'tourist',     name: '観光地',     traffic: '高', spend: '高', note: '高価格でも売れやすい', likes: '水・ジュース', trafficMul: 1.5, spendMul: 1.4, upkeepPerDay: 3000, unlockCost: 250000, installCost: 30000, requiredSales: 500000 },
+  { id: 'school',      name: '学校付近',   traffic: '高', spend: '低', note: '甘い飲み物が人気', likes: '甘い飲み物・炭酸飲料',   trafficMul: 1.3, spendMul: 0.85, upkeepPerDay: 1250, unlockCost: 40000, installCost: 10000, requiredSales: 60000 },
 ];
 
 // 容器と内容量（仕様書 3-2）
@@ -154,19 +154,21 @@ export const LABEL_IMAGE = { maxSide: 320, quality: 0.82, mime: 'image/jpeg' };
 // 設備強化（仕様書 8-1。費用・効果は STEP5 で設定）
 // cost: Lv1 の費用、growth: レベルごとの費用の伸び、per: 1レベルあたりの効果
 export const UPGRADES = [
-  { id: 'ecash',    name: '電子マネー決済', effect: '購入率アップ',     unit: '売れ行き', per: 0.06, maxLevel: 5, cost: 20000,  growth: 1.8 },
-  { id: 'capacity', name: '大容量収納',     effect: '最大在庫数アップ', unit: '1列の上限', per: 3,    maxLevel: 5, cost: 15000,  growth: 1.8 },
-  { id: 'cooling',  name: '高性能冷却装置', effect: '電気代を削減',     unit: '電気代',   per: 0.1,  maxLevel: 5, cost: 12500,  growth: 1.7 },
-  { id: 'speed',    name: '高速販売機構',   effect: '販売効率アップ',   unit: '売れ行き', per: 0.05, maxLevel: 5, cost: 25000, growth: 1.8 },
-  { id: 'security', name: '防犯性能',       effect: '故障・いたずらを減らす', unit: 'トラブル', per: 0.18, maxLevel: 5, cost: 10000, growth: 1.7 },
-  { id: 'ad',       name: '広告パネル',     effect: '集客力アップ',     unit: '人通り',   per: 0.08, maxLevel: 5, cost: 17500,  growth: 1.8 },
+  { id: 'ecash',    name: '電子マネー決済', effect: '購入率アップ',     unit: '売れ行き', per: 0.06, maxLevel: 5, cost: 8000,  growth: 1.8 },
+  { id: 'capacity', name: '大容量収納',     effect: '最大在庫数アップ', unit: '1列の上限', per: 3,    maxLevel: 5, cost: 6000,  growth: 1.8 },
+  { id: 'cooling',  name: '高性能冷却装置', effect: '電気代を削減',     unit: '電気代',   per: 0.1,  maxLevel: 5, cost: 5000,  growth: 1.7 },
+  { id: 'speed',    name: '高速販売機構',   effect: '販売効率アップ',   unit: '売れ行き', per: 0.05, maxLevel: 5, cost: 10000, growth: 1.8 },
+  { id: 'security', name: '防犯性能',       effect: '故障・いたずらを減らす', unit: 'トラブル', per: 0.18, maxLevel: 5, cost: 4000, growth: 1.7 },
+  { id: 'ad',       name: '広告パネル',     effect: '集客力アップ',     unit: '人通り',   per: 0.08, maxLevel: 5, cost: 7000,  growth: 1.8 },
 ];
 export const upgradeOf = (id) => UPGRADES.find((u) => u.id === id);
 export const upgradeCost = (id, lv) => { const u = upgradeOf(id); return Math.round((u.cost * u.growth ** lv) / 100) * 100; };
 
 // 自販機の購入・設置（仕様書 7-3）
 export const SHOP = {
-  machinePrice: 50000,       // 本体価格（＋設置場所ごとの設置費用 installCost）
+  machinePrice: 50000,       // 1台目の本体価格（チュートリアル）
+  // n 台目の本体価格（＋設置場所ごとの設置費用 installCost）。2台目は安く、増やすほど高くなる
+  machinePrices: [50000, 25000, 35000, 50000, 70000, 100000, 140000, 190000],
   relocateRate: 0.6,         // 設置場所の変更費用＝移転先の設置費用 × この割合
 };
 
@@ -368,12 +370,12 @@ const bestDay = (s) => Math.max(s.today?.sales || 0, ...(s.dailyHistory || []).m
 const upgradeTotal = (s) => s.machines.reduce((a, m) => a + Object.values(m.upgrades || {}).reduce((x, y) => x + y, 0), 0);
 const tiers = (id, name, unit, value, list) => list.map(([goal, reward], i) => ({ id: `${id}${i + 1}`, name: `${name} ${i + 1}`, goal, reward, unit, value }));
 export const ACHIEVEMENTS = [
-  { id: 'firstSale', name: 'はじめての売上', goal: 1, reward: 2500, unit: '本', value: (s) => s.stats.totalUnits, desc: '商品を1本売る' },
-  ...tiers('units', '販売本数', '本', (s) => s.stats.totalUnits, [[120, 5000], [750, 15000], [2500, 37500], [12500, 125000]]),
-  ...tiers('sales', '累計売上', '円', (s) => s.stats.totalSales, [[25000, 5000], [125000, 12500], [500000, 50000], [2500000, 200000]]),
+  { id: 'firstSale', name: 'はじめての売上', goal: 1, reward: 10000, unit: '本', value: (s) => s.stats.totalUnits, desc: '商品を1本売る' },
+  ...tiers('units', '販売本数', '本', (s) => s.stats.totalUnits, [[120, 8000], [750, 15000], [2500, 37500], [12500, 125000]]),
+  ...tiers('sales', '累計売上', '円', (s) => s.stats.totalSales, [[25000, 10000], [125000, 20000], [500000, 50000], [2500000, 200000]]),
   ...tiers('day', '1日の売上', '円', bestDay, [[12500, 7500], [50000, 25000], [150000, 75000]]),
   ...tiers('dev', '商品開発', '種類', (s) => s.stats.developed || s.products.length, [[3, 5000], [10, 20000]]),
-  ...tiers('mach', '自販機オーナー', '台', (s) => s.machines.length, [[2, 12500], [5, 50000]]),
+  ...tiers('mach', '自販機オーナー', '台', (s) => s.machines.length, [[2, 15000], [5, 50000], [8, 120000]]),
   ...tiers('loc', '進出', 'か所', (s) => s.unlockedLocations.length - 1, [[1, 12500], [3, 50000]]),
   ...tiers('upg', '設備投資', 'レベル', upgradeTotal, [[5, 7500], [20, 37500]]),
 ];

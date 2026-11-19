@@ -137,7 +137,9 @@ export function swapSlots(machineId, a, b) {
 }
 
 // ---------- 経営（STEP5） ----------
-export const machinePriceAt = (locationId) => SHOP.machinePrice + findLocation(locationId).installCost;
+/** 次に買う自販機の値段（本体＋設置費用）。本体は持っている台数で変わる */
+export const nextMachineBody = (s = getState()) => SHOP.machinePrices[Math.min(s.machines.length, SHOP.machinePrices.length - 1)];
+export const machinePriceAt = (locationId, s = getState()) => nextMachineBody(s) + findLocation(locationId).installCost;
 export const relocateCost = (locationId) => Math.round((findLocation(locationId).installCost * SHOP.relocateRate) / 100) * 100;
 
 /** 設置場所の解放条件。戻り値 { ok, reason } */
