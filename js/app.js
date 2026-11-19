@@ -67,6 +67,7 @@ function resolve(hash) {
     case 'stats': return { tab: 'home', html: stats.render, mount: (el) => stats.mount(el) };
     case 'events': return { tab: 'home', html: eventsPage.render };
     case 'more': case 'settings': return { tab: 'home', html: more.renderSettings, mount: more.mountSettings };
+    case 'notices': return { tab: 'home', html: more.renderNotices, mount: more.mountNotices };
     default: return { tab: 'home', html: home.render, mount: home.mount };
   }
 }
@@ -124,7 +125,8 @@ function renderBackdrop(locationId, weather) {
 function renderHud(s) {
   document.getElementById('hud').innerHTML = `
     <a class="hud-title" href="#home">${ill('machine')}<span>自販機マネジャー</span></a>
-    <div class="hud-money ${s.money < 0 ? 'minus' : ''}">${coin()}<b>${yen(s.money).slice(1)}</b><small>円</small></div>`;
+    <div class="hud-right"><div class="hud-money ${s.money < 0 ? 'minus' : ''}">${coin()}<b>${yen(s.money).slice(1)}</b><small>円</small></div>
+    <a class="hud-gear" href="#settings" aria-label="設定">${ill('gear')}</a></div>`;
 }
 
 async function boot() {

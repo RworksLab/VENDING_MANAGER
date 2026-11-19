@@ -11,7 +11,8 @@ const P = {
   calendar: 'M4 6h16v15H4zM4 10h16M8 3v4M16 3v4',
   chart: 'M4 20V11M10 20V5M16 20v-6M2 20h20',
   shop: 'M3 9l2-5h14l2 5M4 9v11h16V9M3 9h18M9 20v-6h6v6',
-  gear: 'M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7zM12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9 7 7M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1',
+  gear: 'M10.44 4.56 L10.36 2.14 L13.64 2.14 L13.56 4.56 L16.16 5.64 L17.81 3.86 L20.14 6.19 L18.36 7.84 L19.44 10.44 L21.86 10.36 L21.86 13.64 L19.44 13.56 L18.36 16.16 L20.14 17.81 L17.81 20.14 L16.16 18.36 L13.56 19.44 L13.64 21.86 L10.36 21.86 L10.44 19.44 L7.84 18.36 L6.19 20.14 L3.86 17.81 L5.64 16.16 L4.56 13.56 L2.14 13.64 L2.14 10.36 L4.56 10.44 L5.64 7.84 L3.86 6.19 L6.19 3.86 L7.84 5.64Z M12 8.6a3.4 3.4 0 1 0 0 6.8 3.4 3.4 0 0 0 0-6.8z',
+  mail: 'M3 6h18v12H3zM3 7l9 6.5L21 7',
   lock: 'M6 11h12v10H6zM8 11V7a4 4 0 0 1 8 0v4',
   plus: 'M12 5v14M5 12h14',
   refill: 'M12 3v10M8 9l4 4 4-4M4 15v5h16v-5',
@@ -56,7 +57,7 @@ const ILL = {
   people: `<circle cx="11" cy="11" r="4.5" fill="#3d8ef5"/><path d="M3 26a8 8 0 0 1 16 0z" fill="#3d8ef5"/><circle cx="22" cy="12" r="3.8" fill="#6aa9f7"/><path d="M16 26a7 7 0 0 1 13 0z" fill="#6aa9f7"/>`,
   star: `<path d="M16 3l3.9 8 8.6 1.2-6.3 6 1.6 8.5L16 22.6l-7.8 4.1 1.6-8.5-6.3-6 8.6-1.2z" fill="#ffc531" stroke="#e8a200" stroke-width="1.4" stroke-linejoin="round"/>`,
   pin: `<path d="M16 29s9-8.6 9-15a9 9 0 0 0-18 0c0 6.4 9 15 9 15z" fill="#f2584a"/><circle cx="16" cy="13.5" r="3.6" fill="#fff"/>`,
-  gear: `<path d="M16 4l2.2 2.8 3.5-.8.8 3.5L25.3 11 24 14.3l2 3-2.9 2.1.3 3.6-3.6.3-2.1 2.9-3-2-3.3 1.3-1.5-3.3-3.5-.8.8-3.5L4 13l2.8-2.2-.8-3.5 3.5-.8L11 3.4l3.3 1.3z" fill="#3b4f86"/><circle cx="16" cy="15" r="4.2" fill="#fff"/>`,
+  gear: `<path d="M13.87 5.82 L13.77 2.58 L18.23 2.58 L18.13 5.82 L21.69 7.30 L23.91 4.93 L27.07 8.09 L24.70 10.31 L26.18 13.87 L29.42 13.77 L29.42 18.23 L26.18 18.13 L24.70 21.69 L27.07 23.91 L23.91 27.07 L21.69 24.70 L18.13 26.18 L18.23 29.42 L13.77 29.42 L13.87 26.18 L10.31 24.70 L8.09 27.07 L4.93 23.91 L7.30 21.69 L5.82 18.13 L2.58 18.23 L2.58 13.77 L5.82 13.87 L7.30 10.31 L4.93 8.09 L8.09 4.93 L10.31 7.30Z" fill="#5b6b94" stroke="#2b3a67" stroke-width="1.6" stroke-linejoin="round"/><circle cx="16" cy="16" r="4.6" fill="#fff" stroke="#2b3a67" stroke-width="1.6"/>`,
   bell: `<path d="M9 21v-6.5a7 7 0 0 1 14 0V21l2.5 3h-19z" fill="#ffc531" stroke="${O}" stroke-width="1.8" stroke-linejoin="round"/><path d="M13.5 26.5a2.6 2.6 0 0 0 5 0" stroke="${O}" stroke-width="1.8" fill="none" stroke-linecap="round"/>`,
   // タブ用（紺の塗り＋差し色）
   home: `<path d="M4 15 16 5l12 10" stroke="${O}" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M7 14v13h7v-7h4v7h7V14l-9-7.5z" fill="${O}"/>`,
@@ -86,3 +87,8 @@ const WX = {
   typhoon: `<path d="M16 16m-2 0a2 2 0 1 0 4 0 6 6 0 0 0-10-4M16 16m2 0a8 8 0 0 1-14 4M16 16a10 10 0 0 1 12-6M16 16a8 8 0 0 1 2 12" stroke="#6b7aa6" stroke-width="2.4" fill="none" stroke-linecap="round"/>`,
 };
 export const weatherIcon = (id, cls = '') => `<svg class="wx ${cls}" viewBox="0 0 32 32" aria-hidden="true">${WX[id] || WX.sunny}</svg>`;
+
+// ホームのボタン用（色付き・大きめ）
+ILL.status = `<rect x="7" y="3" width="15" height="25" rx="3" fill="#4aa8f0" stroke="#2b3a67" stroke-width="1.6"/><rect x="9.5" y="6" width="10" height="11" rx="1.5" fill="#e6f3ff"/><rect x="11" y="8" width="2.4" height="4" rx=".8" fill="#f2584a"/><rect x="15.5" y="8" width="2.4" height="4" rx=".8" fill="#ffc531"/><rect x="10" y="21" width="9" height="3.5" rx="1" fill="#2b3a67"/><circle cx="24" cy="23" r="6" fill="#4cc96a" stroke="#fff" stroke-width="1.6"/><path d="M21.3 23.1l1.9 1.9 3.6-3.8" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;
+ILL.business = `<rect x="3" y="4" width="26" height="23" rx="4" fill="#fff" stroke="#2b3a67" stroke-width="1.6"/><rect x="7" y="17" width="4.5" height="7" rx="1" fill="#4cc96a"/><rect x="13.75" y="13" width="4.5" height="11" rx="1" fill="#ffc531"/><rect x="20.5" y="9" width="4.5" height="15" rx="1" fill="#3d8ef5"/><path d="M6 13l6-4.5 4 2.5 8-6" stroke="#f2584a" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M20.5 5h3.8v3.8" stroke="#f2584a" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;
+ILL.mail = `<rect x="3" y="7" width="26" height="19" rx="3" fill="#fff" stroke="#2b3a67" stroke-width="1.6"/><path d="M3.8 8.5 16 18l12.2-9.5" fill="#cfe5ff" stroke="#2b3a67" stroke-width="1.6" stroke-linejoin="round"/><path d="M4 25l9-7.5M28 25l-9-7.5" stroke="#2b3a67" stroke-width="1.3" opacity=".5"/>`;

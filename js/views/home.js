@@ -33,10 +33,10 @@ export function render(s) {
     </div>
   </section>
   <div class="home-links">
-    <button class="hlink" data-open="status">${ill('power')}<span>稼働状況</span></button>
-    <a class="hlink" href="#stats">${ill('barsBlue')}<span>経営</span>${claim ? `<i class="badge">${claim}</i>` : ''}</a>
+    <button class="hlink" data-open="status">${ill('status')}<span>稼働状況</span></button>
+    <a class="hlink" href="#stats">${ill('business')}<span>経営</span>${claim ? `<i class="badge">${claim}</i>` : ''}</a>
     <a class="hlink" href="#events">${weatherIcon(wx.id, 'ill')}<span>イベント</span>${evCount ? `<i class="badge blue">${evCount}</i>` : ''}</a>
-    <a class="hlink" href="#settings">${ill('gear')}<span>設定</span>${unread ? `<i class="badge">${unread}</i>` : ''}</a>
+    <a class="hlink" href="#notices">${ill('mail')}<span>お知らせ</span>${unread ? `<i class="badge">${unread}</i>` : ''}</a>
   </div>`;
 }
 

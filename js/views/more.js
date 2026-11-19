@@ -37,12 +37,6 @@ export function renderSettings(s) {
   <button class="btn wide tt-open" id="tt-open">${icon('star')}遊び方を見る</button>
   ${soundSection()}
   ${notifySection(s)}
-  <section class="wcard"><h2 class="wtitle">${icon('bell')}お知らせ</h2>
-    <ul class="notices" id="notices">${s.notices.map((n, i) => `<li class="${n.read ? '' : 'unread'} ${i >= 10 ? 'more' : ''}">${n.target
-      ? `<a href="${n.target}"><span><time>${fmtDateTime(n.at)}</time>${esc(n.text)}</span><span class="go">›</span></a>`
-      : `<span><time>${fmtDateTime(n.at)}</time>${esc(n.text)}</span>`}</li>`).join('') || '<li class="muted">ありません</li>'}</ul>
-    ${s.notices.length > 10 ? `<button class="btn ghost wide" id="nt-more">もっと見る（${s.notices.length - 10}件）</button>` : ''}
-  </section>
   <section class="wcard"><h2 class="wtitle">${icon('cloud')}セーブ</h2><ul class="rows" id="save-status"></ul></section>
   <section class="wcard"><h2 class="wtitle">${icon('backup')}バックアップ</h2>
     <div class="row-btns"><button class="btn" id="bk-copy">${icon('copy')}コピー</button><button class="btn" id="bk-open">${icon('restore')}復元</button></div>
@@ -79,7 +73,7 @@ function notifySection(s) {
     <div class="sw-group">${NOTIFY.types.map((t) => sw(t.id, t.name)).join('')}</div>
     <div class="perm-row"><span><b>端末の通知</b><small>${permText}</small></span>
       ${perm === 'default' ? '<button class="btn" id="nf-allow">許可する</button>' : ''}</div>
-    ${perm === 'unsupported' ? '<p class="muted small">ホーム画面に追加したアプリ（PWA）として開くと、アプリを閉じていても売り切れなどを端末に通知できます。この画面ではアプリ内のお知らせと、ホームの「設定」ボタンの件数で確認できます。</p>' : ''}
+    ${perm === 'unsupported' ? '<p class="muted small">ホーム画面に追加したアプリ（PWA）として開くと、アプリを閉じていても売り切れなどを端末に通知できます。この画面ではアプリ内のお知らせと、ホームの「お知らせ」ボタンの件数で確認できます。</p>' : ''}
   </section>`;
 }
 
@@ -97,17 +91,11 @@ export function mountSettings(el, s) {
   el.querySelectorAll('[data-nf]').forEach((c) => c.addEventListener('change', () => {
     update((st) => { st.notifications[c.dataset.nf] = c.checked; });
   }));
-  el.querySelector('#nt-more')?.addEventListener('click', (e) => {
-    el.querySelector('#notices').classList.add('all');
-    e.currentTarget.remove();
-  });
   el.querySelector('#nf-allow')?.addEventListener('click', async () => {
     const r = await requestPermission();
     toast(r === 'granted' ? '端末の通知を許可しました' : '通知は許可されませんでした');
     update((st) => { st.notifications.permissionAsked = Date.now(); });
   });
-  // 表示したお知らせを既読に（未読の印を一度見せてから）
-  if (s.notices.some((n) => !n.read)) setTimeout(() => update((st) => st.notices.forEach((n) => { n.read = true; })), 1200);
   unsubStatus?.();
   const box = el.querySelector('#save-status');
   const label = { saved: '保存済み', pending: '送信待ち', error: '保存できません', ready: '接続済み', off: '利用できません', idle: '—' };
@@ -139,4 +127,26 @@ export function mountSettings(el, s) {
     toast('リセットしました');
     location.hash = '#home';
   });
+}
+
+// ----- お知らせ  #notices -----
+export function renderNotices(s) {
+  return `${pageHead({ title: 'お知らせ', ic: 'mail', back: '#home' })}
+  <div class="narrow">
+  <section class="wcard">
+    <ul class="notices" id="notices">${s.notices.map((n, i) => `<li class="${n.read ? '' : 'unread'} ${i >= 15 ? 'more' : ''}">${n.target
+      ? `<a href="${n.target}"><span><time>${fmtDateTime(n.at)}</time>${esc(n.text)}</span><span class="go">›</span></a>`
+      : `<span><time>${fmtDateTime(n.at)}</time>${esc(n.text)}</span>`}</li>`).join('') || '<li class="muted">お知らせはありません</li>'}</ul>
+    ${s.notices.length > 15 ? `<button class="btn ghost wide" id="nt-more">もっと見る（${s.notices.length - 15}件）</button>` : ''}
+  </section>
+  </div>`;
+}
+
+export function mountNotices(el, s) {
+  el.querySelector('#nt-more')?.addEventListener('click', (e) => {
+    el.querySelector('#notices').classList.add('all');
+    e.currentTarget.remove();
+  });
+  // 表示したお知らせを既読に（未読の印を一度見せてから）
+  if (s.notices.some((n) => !n.read)) setTimeout(() => update((st) => st.notices.forEach((n) => { n.read = true; })), 1200);
 }

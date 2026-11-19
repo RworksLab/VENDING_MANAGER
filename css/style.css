@@ -948,3 +948,13 @@ body{font-size:15px}
 .ach-count{margin-left:auto;font-size:12px;color:var(--muted);font-weight:700}
 /* ダブルタップ拡大の防止（ボタン類にも明示） */
 a,button,input,select,textarea,label,.slot,.sg-cell{touch-action:manipulation}
+
+/* ---------- ヘッダーの設定ボタン・ホームのボタン ---------- */
+.hud-right{display:flex;align-items:center;gap:8px;flex:none}
+.hud-gear{display:grid;place-items:center;width:38px;height:38px;border-radius:50%;background:var(--soft)}
+.hud-gear .ill{width:26px;height:26px}
+.hud-gear:active{transform:scale(.94)}
+.hlink .ill,.hlink .wx{width:36px !important;height:36px !important}
+.hlink{min-height:76px !important}
+@media(max-width:360px){.hud-gear{width:34px;height:34px}.hud-gear .ill{width:22px;height:22px}}
+@media(max-width:380px){.hud-title span{font-size:15px}.hud-right{gap:6px}}
