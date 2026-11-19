@@ -19,7 +19,7 @@ export function render(s) {
   const evCount = visibleEvents(info, s.today.date).length;
   const help = supportAvailable(s);
   const claim = claimableCount(s);
-  return `<div class="home-page">
+  return `<div class="home-page ${help ? 'has-help' : ''}">
   ${help ? `<section class="help-card">${coin()}<span><b>資金がピンチです</b><small>経営支援金 ${yen(help)} を受け取れます（1日1回）</small></span><button class="btn primary" id="help-btn">受け取る</button></section>` : ''}
   <section class="kpi-box" aria-label="本日の経営状況">
     <div>${coin()}<span><small>本日の売上</small><b>${num(s.today.sales)}<em>円</em></b></span></div>

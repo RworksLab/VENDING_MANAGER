@@ -85,6 +85,7 @@ function render() {
   const same = lastHash === location.hash;
   const y = scrollY;
   renderHud(s);
+  document.documentElement.classList.toggle('no-scroll', (location.hash || '#home') === '#home');   // ホームはスクロールしない
   view.innerHTML = r.html(s);
   r.mount?.(view, s);
   document.querySelectorAll('.tabbar a').forEach((a) => a.setAttribute('aria-current', a.dataset.tab === r.tab ? 'page' : 'false'));

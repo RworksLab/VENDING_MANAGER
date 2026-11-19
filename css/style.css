@@ -978,6 +978,23 @@ a,button,input,select,textarea,label,.slot,.sg-cell{touch-action:manipulation}
 .gc-tip .wx{width:20px;height:20px;flex:none}
 @media(min-width:900px){.home-page{max-width:860px;margin:0 auto;min-height:0}.home-page .map-card{flex:none}.map-wrap{container-type:normal}.map-wrap .map{width:100%}}
 /* 小さい画面でマップが小さくなりすぎないように（幅の8割以上）。収まらなければ少しスクロール */
-.home-page{justify-content:space-between}
-.home-page .map-card{min-height:calc((100vw - 44px) * 0.825 * 0.9 + 44px);max-height:calc((100vw - 44px) * 0.825 + 44px)}
-@media(max-height:700px){.gc-tip{display:none}}
+.home-page{justify-content:space-between;height:calc(100dvh - var(--hud-h) - max(10px,env(safe-area-inset-top)) - var(--tab-h) - 14px - env(safe-area-inset-bottom));min-height:0 !important;overflow:hidden}
+.home-page .map-card{min-height:0;max-height:calc((100vw - 44px) * 0.825 + 44px)}
+/* ホームはスクロールしない（どの画面サイズでも一画面に収める） */
+html.no-scroll,html.no-scroll body{overflow:hidden;overscroll-behavior:none}
+/* 低い画面ではほかの部品を詰めて、マップの大きさを確保する */
+@media(max-height:760px){
+  .home-page{gap:8px}
+  .kpi-box{padding:8px 2px !important}.kpi-box .coin,.kpi-box .ill{width:20px !important;height:20px !important}
+  .goal-card{padding:8px 12px;gap:4px}.gc-head{display:none}
+  .hlink{min-height:62px !important;gap:2px}.hlink .ill,.hlink .wx{width:28px !important;height:28px !important}
+}
+@media(max-height:620px){
+  .kpi-box small{display:none}
+  .goal-card .gc-main small{display:none}
+  .hlink{min-height:52px !important;font-size:11px}.hlink .ill,.hlink .wx{width:24px !important;height:24px !important}
+  .legend{display:none !important}
+}
+@media(max-height:720px){.gc-tip{display:none}}
+@media(max-height:760px){.home-page.has-help .goal-card{display:none}.help-card{padding:8px 10px}.help-card .coin{width:26px;height:26px}}
+@media(max-height:620px){.help-card small{display:none}}
