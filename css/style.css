@@ -731,7 +731,7 @@ a.hlink{text-decoration:none}
 .te-wx{display:flex;align-items:center;gap:10px}
 .te-wx b{font-size:20px;font-weight:900}
 .ev-fx{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:6px}
-.ev-fx li{font-size:12px;font-weight:800;padding:4px 10px;border-radius:99px}
+.ev-fx li{flex:none;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px;font-weight:800;padding:4px 10px;border-radius:99px}  /* 縮めずに次の行へ送る（縮むと折り返して縦に広がる） */
 .ev-fx li.up{background:#e3f6e8;color:var(--green-d)}
 .ev-fx li.down{background:#fff1dc;color:#a35400}
 .ev-card{background:#fff;border-radius:var(--r);padding:14px 16px;margin-bottom:10px;border-left:0;position:relative}
