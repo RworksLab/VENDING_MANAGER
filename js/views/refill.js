@@ -13,7 +13,7 @@ import { slotGrid } from './slotgrid.js';
 import { pageHead, locPill } from './parts.js';
 import { se } from '../audio.js';
 
-const ui = { id: null, sel: 0 };
+const ui = { id: null, sel: 0, swap: false };
 
 function panel(s, m) {
   const sl = m.slots[ui.sel];
@@ -45,7 +45,22 @@ function panel(s, m) {
       <button class="rp-btn" data-take="all" ${sl.stock ? '' : 'disabled'}>すべて</button>
       <button class="rp-btn ghost" data-take="clear">空きにする</button></div>
     ${!wh && room ? '<p class="rp-sub">この商品は倉庫にありません。<a href="#warehouse">倉庫で仕入れる</a></p>' : ''}
+    ${swapBox(s, m, sl)}
   </section>`;
+}
+
+// 並べている商品を別の商品に入れ替える
+function swapBox(s, m, sl) {
+  if (!ui.swap) return `<button class="btn wide rp-swap-open" data-swapopen>${icon('swap')}商品を入れ替える</button>`;
+  const others = lots(s).filter((l) => l.key !== lotKey(sl.item));
+  return `<div class="rp-swap">
+    <div class="rp-swap-head"><b>入れ替える商品をタップ</b><button class="rp-btn ghost" data-swapclose>やめる</button></div>
+    <p class="rp-sub">今の「${esc(sl.item.name)}」${sl.stock ? `${sl.stock}本は倉庫に戻り、` : 'の代わりに、'}選んだ商品が最大${slotCap(m)}本並びます</p>
+    ${others.length ? `<div class="rp-lots">${others.map((l) => `<button class="rp-lot ${slotMatches(m.modelId, ui.sel, l.snap) ? 'rec' : ''}" data-swap="${l.key}">
+        ${slotMatches(m.modelId, ui.sel, l.snap) ? '<em>おすすめ</em>' : ''}
+        <span class="rp-lot-art">${drinkSVG(l.snap)}</span><b>${esc(l.snap.name)}</b><small>倉庫 ${num(l.qty)}本</small></button>`).join('')}</div>`
+      : '<p class="rp-sub">倉庫にほかの商品がありません。<a href="#warehouse">倉庫で仕入れる</a></p>'}
+  </div>`;
 }
 
 export function render(s, id) {
@@ -73,9 +88,21 @@ export function mount(el, s, id) {
     const b = e.target.closest('button');
     if (!b) return;
     const m = getState().machines.find((x) => x.id === id);
-    if (b.dataset.cell !== undefined) { ui.sel = Number(b.dataset.cell); return redraw(); }
+    if (b.dataset.cell !== undefined) { ui.sel = Number(b.dataset.cell); ui.swap = false; return redraw(); }
+    if ('swapopen' in b.dataset) { ui.swap = true; redraw(); el.querySelector('.rp-swap')?.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); return; }
+    if ('swapclose' in b.dataset) { ui.swap = false; return redraw(); }
     if ('fillall' in b.dataset) { const n = refill(id, planFillAll(getState(), m)); se(n ? 'refill' : 'error'); toast(`${n}本を補充しました`); return; }
     const sl = m.slots[ui.sel];
+    if (b.dataset.swap) {
+      const before = sl.item.name, back = sl.stock;
+      recall(id, [{ slot: ui.sel, qty: sl.stock, clear: true }]);
+      const n = refill(id, [{ slot: ui.sel, key: b.dataset.swap, qty: slotCap(m) }]);
+      ui.swap = false;
+      const after = getState().machines.find((x) => x.id === id).slots[ui.sel].item?.name || '';
+      se(n ? 'refill' : 'error');
+      toast(n ? `「${before}」を「${after}」に入れ替えました${back ? `（${back}本は倉庫へ）` : ''}` : '入れ替えできませんでした');
+      return;
+    }
     if (b.dataset.place) { const n = refill(id, [{ slot: ui.sel, key: b.dataset.place, qty: slotCap(m) }]); se(n ? 'refill' : 'error'); toast(`${n}本を並べました`); return; }
     if (b.dataset.add) {
       const n = refill(id, [{ slot: ui.sel, key: lotKey(sl.item), qty: b.dataset.add === 'max' ? slotCap(m) : Number(b.dataset.add) }]);
