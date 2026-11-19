@@ -89,6 +89,30 @@ function rollDay(st, at) {
 }
 
 /**
+ * 維持費：その日のぶんを貯めておき（upkeepDue）、日付が変わったら前日分をまとめて支払う。
+ * 所持金が SUPPORT.debtFloor を割る分は免除する。
+ */
+function settleUpkeep(st, at) {
+  const key = dateKey(at);
+  const due = st.upkeepDue;
+  if (!due) { st.upkeepDue = { date: key, amount: 0 }; return; }
+  if (due.date === key || key < due.date) return;
+  st.upkeepDue = { date: key, amount: 0 };
+  const amt = Math.round(due.amount);
+  if (!amt) return;
+  const pay = Math.min(amt, Math.max(0, st.money - SUPPORT.debtFloor));
+  st.money -= pay;
+  st.stats.totalUpkeep = (st.stats.totalUpkeep || 0) + pay;
+  const day = dayBucket(st, at);                     // 支払った日（新しい日）の支出として記録
+  day.upkeep = (day.upkeep || 0) + pay;
+  const [, mo, d] = due.date.split('-').map(Number);
+  addNotice(st, `${mo}/${d}の維持費 ${yenText(pay)} を支払いました${pay < amt ? `（${yenText(amt - pay)} は免除）` : ''}`);
+}
+
+/** 今日の維持費の見込み（まだ支払っていないぶん） */
+export const upkeepDueToday = (s = getState()) => (s.upkeepDue?.date === dateKey() ? Math.round(s.upkeepDue.amount) : 0);
+
+/**
  * 経過時間分の販売を反映する。戻り値: { units, sales, ticks, gains: {machineId: sales}, soldOut: [..] }
  */
 export function runSimulation(now = Date.now()) {
@@ -105,20 +129,12 @@ export function runSimulation(now = Date.now()) {
 
     while (t + TICK <= now) {
       const at = t + TICK / 2;                                    // 刻みの中央の時刻で需要を決める
+      settleUpkeep(st, at);                                       // 日付が変わったら前日分の維持費を支払う
       const day = dayBucket(st, at);
       for (const m of st.machines) {
         if (m.open === false) continue;           // 営業開始前（チュートリアル中）
-        // 維持費（日割り）。端数は持ち越して円単位で引く
-        const fee = upkeepOf(m, at, st).total / ticksPerDay;
-        st.upkeepCarry = (st.upkeepCarry || 0) + fee;
-        let pay = Math.floor(st.upkeepCarry);
-        if (pay) st.upkeepCarry -= pay;
-        pay = Math.min(pay, Math.max(0, st.money - SUPPORT.debtFloor));   // 所持金が下限を割る分は免除（ツケにしない）
-        if (pay) {
-          st.money -= pay;
-          st.stats.totalUpkeep = (st.stats.totalUpkeep || 0) + pay;
-          day.upkeep = (day.upkeep || 0) + pay;
-        }
+        // 維持費は日割りで貯めるだけ（支払いは翌日の始めにまとめて）
+        st.upkeepDue.amount += upkeepOf(m, at, st).total / ticksPerDay;
         // トラブル（防犯性能で起きにくくなる）
         if (!isDown(m, at)) {
           const chance = (TROUBLE.perDayChance / ticksPerDay) * Math.max(0, 1 - lv(m, 'security') * upgradeOf('security').per);
@@ -172,6 +188,7 @@ export function runSimulation(now = Date.now()) {
       addNotice(st, `「${l.name}」が解放できるようになりました（ショップ）`, { type: 'location', target: '#shop' });
     }
     st.salesLog.length = Math.min(st.salesLog.length, SIM.salesLogMax);
+    settleUpkeep(st, now);
     st.clock.lastSimAt = t;
     rollDay(st, now);
   });

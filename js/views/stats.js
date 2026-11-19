@@ -3,7 +3,7 @@
 // 本日の収支、直近7日間、累計、商品別・自販機別ランキング
 // =============================================================
 import { findLocation } from '../config.js';
-import { upkeepOf } from '../sim.js';
+import { upkeepOf, upkeepDueToday } from '../sim.js';
 import { drinkSVG, machineSVG } from '../render/art.js';
 import { ill } from '../icons.js';
 import { esc, num, yen, dateKey } from '../util.js';
@@ -51,7 +51,7 @@ export function render(s) {
         <div><small>維持費</small><b>−${yen(t.upkeep || 0)}</b></div>
         <div class="pl-total"><small>利益</small><b class="${todayProfit < 0 ? 'warn-t' : 'ok-t'}">${yen(todayProfit)}</b></div>
       </div>
-      <p class="muted small">維持費は全${s.machines.length}台で 1日 ${yen(upDay)}（10分ごとに日割りで差し引き）</p>
+      <p class="muted small">維持費は毎日0時に前日分をまとめて支払います（全${s.machines.length}台で1日 約${yen(upDay)}）。今日の分：${yen(upkeepDueToday(s))}（明日支払い）</p>
     </section>
     ${achievementsSection(s)}
     <section class="wcard">

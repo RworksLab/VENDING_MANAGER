@@ -958,3 +958,26 @@ a,button,input,select,textarea,label,.slot,.sg-cell{touch-action:manipulation}
 .hlink{min-height:76px !important}
 @media(max-width:360px){.hud-gear{width:34px;height:34px}.hud-gear .ill{width:22px;height:22px}}
 @media(max-width:380px){.hud-title span{font-size:15px}.hud-right{gap:6px}}
+
+/* ---------- ホーム：画面にぴったり収める ---------- */
+.home-page{display:flex;flex-direction:column;gap:10px;min-height:calc(100dvh - var(--hud-h) - max(10px,env(safe-area-inset-top)) - var(--tab-h) - 14px - env(safe-area-inset-bottom))}
+.home-page>*{margin:0 !important}
+.home-page .map-card{flex:1 1 0;min-height:190px;display:flex;flex-direction:column;gap:6px}
+.map-wrap{flex:1 1 0;min-height:0;container-type:size;display:grid;place-items:center}
+.map-wrap .map{width:min(100cqw,calc(100cqh * 400 / 330));aspect-ratio:400/330}
+.goal-card{display:flex;flex-direction:column;gap:6px;background:#fff;border-radius:var(--r);padding:10px 14px;text-decoration:none;color:var(--ink)}
+.gc-head{display:flex;align-items:center;gap:6px}.gc-head .ill{width:20px;height:20px}
+.gc-head b{font-size:14px;font-weight:900}.gc-head small{margin-left:auto;font-size:12px;color:var(--muted);font-weight:700}
+.gc-row{display:flex;align-items:center;gap:10px}
+.gc-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.gc-main b{font-size:15px}.gc-main small{font-size:12px;color:var(--muted);font-weight:700}
+.gc-rw,.gc-btn{display:flex;align-items:center;gap:4px;flex:none;font-weight:900;font-size:13px}
+.gc-rw{color:var(--muted)}.gc-rw .coin,.gc-btn .coin{width:16px;height:16px}
+.gc-btn{padding:8px 12px}
+.gc-tip{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--ink);background:var(--soft);border-radius:10px;padding:5px 8px}
+.gc-tip .wx{width:20px;height:20px;flex:none}
+@media(min-width:900px){.home-page{max-width:860px;margin:0 auto;min-height:0}.home-page .map-card{flex:none}.map-wrap{container-type:normal}.map-wrap .map{width:100%}}
+/* 小さい画面でマップが小さくなりすぎないように（幅の8割以上）。収まらなければ少しスクロール */
+.home-page{justify-content:space-between}
+.home-page .map-card{min-height:calc((100vw - 44px) * 0.825 * 0.9 + 44px);max-height:calc((100vw - 44px) * 0.825 + 44px)}
+@media(max-height:700px){.gc-tip{display:none}}
