@@ -268,15 +268,16 @@ export const SEASON_TEMP = {
 //   pick: 'genre' | 'location'  発生時にジャンルや場所を1つ選び、その対象だけ倍率（value）
 // scale: small / medium / large、announce: 何日前から予告するか（0＝当日まで分からない）
 // =============================================================
+// どの天気にも、得をする場所や商品が必ずある（▲が1つ以上）
 export const WEATHER = {
   clear:   { name: '快晴',   effects: { traffic: { park: 1.25, tourist: 1.25 }, temp: { cold: 1.1 } } },
-  sunny:   { name: '晴れ',   effects: {} },
-  cloudy:  { name: 'くもり', effects: { traffic: { all: 0.95 } } },
-  rain:    { name: '雨',     effects: { traffic: { all: 0.9, park: 0.55, tourist: 0.6 } } },
-  snow:    { name: '雪',     effects: { traffic: { all: 0.75 }, temp: { hot: 1.3 } } },
-  hot:     { name: '猛暑日', effects: { temp: { cold: 1.45, hot: 0.5 }, genre: { water: 1.2 } } },
-  freeze:  { name: '真冬日', effects: { temp: { hot: 1.45, cold: 0.75 } } },
-  typhoon: { name: '台風接近', effects: { traffic: { all: 0.4 } } },
+  sunny:   { name: '晴れ',   effects: { traffic: { park: 1.1 }, genre: { juice: 1.1, soda: 1.1 } } },
+  cloudy:  { name: 'くもり', effects: { traffic: { all: 0.95, office: 1.1 }, genre: { tea: 1.1, coffee: 1.1 } } },
+  rain:    { name: '雨',     effects: { traffic: { all: 0.9, park: 0.55, tourist: 0.6, station: 1.25 }, temp: { hot: 1.15 }, genre: { coffee: 1.15 } } },
+  snow:    { name: '雪',     effects: { traffic: { all: 0.75, residential: 1.2 }, temp: { hot: 1.3 }, genre: { sweet: 1.2 } } },
+  hot:     { name: '猛暑日', effects: { temp: { cold: 1.45, hot: 0.5 }, genre: { water: 1.2, energy: 1.2 } } },
+  freeze:  { name: '真冬日', effects: { temp: { hot: 1.45, cold: 0.75 }, genre: { sweet: 1.15 } } },
+  typhoon: { name: '台風接近', effects: { traffic: { all: 0.5, residential: 1.5 }, genre: { water: 1.6 } } },   // 備えの買いだめ
 };
 // 月ごとの天候の出やすさ（重み）
 export const WEATHER_BY_MONTH = [
