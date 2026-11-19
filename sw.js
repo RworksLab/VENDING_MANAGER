@@ -5,7 +5,7 @@
 //  - サーバーからのプッシュ通知（push イベント）を受け取って表示する受け口
 // ファイルを更新したら VERSION を上げる
 // =============================================================
-const VERSION = 'v14';
+const VERSION = 'v15';
 const CACHE = `vending-sim-${VERSION}`;
 const SHELL = [
   './', './index.html', './manifest.webmanifest', './css/style.css',
