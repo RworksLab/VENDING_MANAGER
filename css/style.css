@@ -655,8 +655,8 @@ a.bbtn{text-decoration:none}
 .mini-coin{width:24px;height:24px}
 @media(min-width:760px){.info-strip{grid-template-columns:repeat(4,minmax(0,1fr)) auto}.info-strip>div{border-right:2px solid var(--line)}.info-strip>div:nth-child(4){border-right:0}}
 a.chg-btn{text-decoration:none;color:var(--ink)}
-.down{display:flex;align-items:center;gap:8px;background:#ffe3e0;color:var(--red-d);font-weight:900;font-size:14px;border-radius:14px;padding:10px 14px;margin:0 0 12px}
-.down .ic{width:20px;height:20px}
+.down-bar{display:flex;align-items:center;gap:8px;background:#ffe3e0;color:var(--red-d);font-weight:900;font-size:14px;border-radius:14px;padding:10px 14px;margin:0 0 12px}
+.down-bar .ic{width:20px;height:20px}
 .mcard.add{text-decoration:none}
 .buy-btn{min-height:44px;min-width:96px;padding:0 14px;border-radius:12px;border:2px solid var(--blue-d);background:var(--blue);color:#fff;font:inherit;font-weight:900;font-size:14px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:4px;text-align:center;line-height:1.25;box-shadow:0 3px 0 var(--blue-d)}
 .buy-btn:disabled{background:#eef2f8;border-color:#d5e0f0;color:var(--muted);box-shadow:none;cursor:not-allowed}
@@ -731,7 +731,7 @@ a.hlink{text-decoration:none}
 .te-wx{display:flex;align-items:center;gap:10px}
 .te-wx b{font-size:20px;font-weight:900}
 .ev-fx{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:6px}
-.ev-fx li{flex:none;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px;font-weight:800;padding:4px 10px;border-radius:99px}  /* 縮めずに次の行へ送る（縮むと折り返して縦に広がる） */
+.ev-fx li{flex:none;margin:0;align-self:flex-start;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px;font-weight:800;padding:4px 10px;border-radius:99px}  /* 縮めずに次の行へ送る（縮むと折り返して縦に広がる） */
 .ev-fx li.up{background:#e3f6e8;color:var(--green-d)}
 .ev-fx li.down{background:#fff1dc;color:#a35400}
 .ev-card{background:#fff;border-radius:var(--r);padding:14px 16px;margin-bottom:10px;border-left:0;position:relative}

@@ -71,7 +71,7 @@ export function renderDetail(s, id) {
     </div>` : '<div class="slot empty"><div class="slot-art"></div><b>空き</b></div>').join('');
   const log = s.salesLog.filter((l) => l.machineId === m.id).slice(0, 8);
 
-  const down = isDown(m) ? `<p class="down">${icon('alert')}${esc(m.downReason || 'トラブル')}のため販売停止中（${new Date(m.downUntil).getHours()}:${String(new Date(m.downUntil).getMinutes()).padStart(2, '0')}ごろ復旧）</p>` : '';
+  const down = isDown(m) ? `<p class="down-bar">${icon('alert')}${esc(m.downReason || 'トラブル')}のため販売停止中（${new Date(m.downUntil).getHours()}:${String(new Date(m.downUntil).getMinutes()).padStart(2, '0')}ごろ復旧）</p>` : '';
   const up = upkeepOf(m);
   const ev = effectsForLocation(s, m.locationId);
   const evRow = `<a class="ev-row" href="#events">${weatherIcon(ev.weather.id)}<b>${esc(ev.weather.name)}</b>
