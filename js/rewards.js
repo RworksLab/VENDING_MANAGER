@@ -66,7 +66,7 @@ export function claimSupport() {
     s.money += amt;                                              // 借金をなくしたうえで amount 円
     s.support = { date: s.today.date, count: (s.support?.count || 0) + 1 };
     s.stats.totalSupport = (s.stats.totalSupport || 0) + amt;
-    addNotice(s, `経営支援金 ¥${amt.toLocaleString('ja-JP')} を受け取りました`);
+    addNotice(s, `経営支援金 ¥${amt.toLocaleString('ja-JP')} を受け取りました`, { type: 'support' });
   });
   return amt;
 }
@@ -104,7 +104,18 @@ export function claimCompensation() {
   update((s) => {
     s.meta.compensation = COMPENSATION.id;
     s.money += c.total;
-    addNotice(s, `バランス調整の補填 ¥${c.total.toLocaleString('ja-JP')} を受け取りました（払い戻し ¥${c.refund.toLocaleString('ja-JP')}＋お詫び ¥${c.bonus.toLocaleString('ja-JP')}）`);
+    addNotice(s, `バランス調整の補填 ¥${c.total.toLocaleString('ja-JP')} を受け取りました（払い戻し ¥${c.refund.toLocaleString('ja-JP')}＋お詫び ¥${c.bonus.toLocaleString('ja-JP')}）`, { type: 'support' });
   });
   return c;
+}
+
+/** 経営支援金を受け取れるようになったら、その日に一度だけお知らせする */
+export function noticeSupport() {
+  const s = getState();
+  const amt = supportAvailable(s);
+  if (!amt || s.support?.noticed === s.today.date) return;
+  update((st) => {
+    st.support = { ...(st.support || {}), noticed: st.today.date };
+    addNotice(st, `資金がピンチです。ホームで経営支援金 ¥${amt.toLocaleString('ja-JP')} を受け取れます`, { type: 'support', target: '#home' });
+  });
 }

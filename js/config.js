@@ -3,7 +3,7 @@
 // 数値はすべてここで調整する。他のファイルに数値を直書きしない。
 // =============================================================
 
-export const SCHEMA_VERSION = 5;
+export const SCHEMA_VERSION = 6;
 export const SAVE_KEY = 'vending-sim/save/v1';
 
 export const BALANCE = {

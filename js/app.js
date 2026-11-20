@@ -29,7 +29,7 @@ import { closeSheet, openSheet, toast } from './ui.js';
 import { registerSW, systemNotify, setBadge } from './notify.js';
 import { initAudio, se } from './audio.js';
 import { initCoach } from './coach.js';
-import { noticeNewAchievements, compensationFor, claimCompensation } from './rewards.js';
+import { noticeNewAchievements, noticeSupport, compensationFor, claimCompensation } from './rewards.js';
 import { initUpdateCheck } from './update.js';
 
 const TABS = [
@@ -152,28 +152,31 @@ async function boot() {
   tick({ welcome: true });
   initCoach(subscribe);
   showCompensation();                              // すでに遊んでいた人への補填（一度だけ）
-  subscribe(() => setTimeout(noticeNewAchievements, 0));   // 実績の達成をお知らせ
+  subscribe(() => setTimeout(() => { noticeNewAchievements(); noticeSupport(); }, 0));   // 実績（端末通知のみ）・救済のお知らせ
   noticeNewAchievements();                            // 操作しながら進むチュートリアル
   setInterval(() => tick(), 60 * 1000);   // 開いている間も1分ごとに販売を進める
 }
 
 // ---------- 通知（新しいお知らせを端末通知・トースト・バッジへ） ----------
-let lastNoticeId = null;
+const lastIds = {};
 const IMPORTANT = new Set(['soldOut', 'trouble', 'location']);
+// お知らせ一覧（notices）と端末通知用（alerts）の新着を、端末の通知・トーストに回す
 function watchNotices(s) {
   const nf = s.notifications || {};
   const enabled = (n) => nf.enabled !== false && nf[n.type] !== false;
-  if (lastNoticeId === null) lastNoticeId = s.notices[0]?.id ?? '';
-  const fresh = [];
-  for (const n of s.notices) { if (n.id === lastNoticeId) break; fresh.push(n); }
-  if (fresh.length) {
-    lastNoticeId = s.notices[0].id;
+  for (const key of ['notices', 'alerts']) {
+    const list = s[key] || [];
+    if (!(key in lastIds)) { lastIds[key] = list[0]?.id ?? ''; continue; }
+    const fresh = [];
+    for (const n of list) { if (n.id === lastIds[key]) break; fresh.push(n); }
+    if (!fresh.length) continue;
+    lastIds[key] = list[0].id;
     fresh.filter(enabled).reverse().forEach((n) => {
       if (document.hidden) systemNotify(n);
       else if (IMPORTANT.has(n.type)) { se('notice'); toast(n.text); }
     });
   }
-  setBadge(s.notices.filter((n) => !n.read && enabled(n)).length);
+  setBadge(s.notices.filter((n) => !n.read).length);   // アプリのバッジはお知らせ一覧の未読だけ
 }
 
 // ---------- 販売処理の実行 ----------

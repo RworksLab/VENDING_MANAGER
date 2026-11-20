@@ -13,7 +13,7 @@ import { se } from '../audio.js';
 export function render(s) {
   const running = s.machines.filter((m) => machineStatus(m).key !== 'idle').length;
   const nf = s.notifications || {};
-  const unread = s.notices.filter((n) => !n.read && nf.enabled !== false && nf[n.type] !== false).length;
+  const unread = s.notices.filter((n) => !n.read).length;
   const info = dayInfo(s.events.seed, s.today.date);
   const wx = info.weather;
   const evCount = visibleEvents(info, s.today.date).length;

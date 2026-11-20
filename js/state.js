@@ -110,9 +110,8 @@ export function createInitialState(now = Date.now()) {
     purchaseHistory: [],         // STEP3
     salesLog: [],                // STEP4
     events: { calendar: {}, seed: Math.floor(Math.random() * 1e9) }, // STEP6
-    notices: [
-      { id: uid('n'), at: now, text: 'ようこそ！まずは最初の自販機を買ってみましょう。', read: false },
-    ],
+    notices: [],                 // お知らせ一覧（アップデート・救済）
+    alerts: [],                  // 端末通知用（売り切れ・トラブルなど。一覧には出さない）
     notifications: { enabled: true, soldOut: true, lowStock: true, events: true, sales: true, location: true, trouble: true },
     clock: { createdAt: now, lastSeenAt: now, lastSimAt: now, skewCount: 0 },
     meta: { savedAt: now, saveCount: 0, compensation: '2026-11-20' },   // 補填は始める前の値段変更ぶんなので対象外
@@ -136,6 +135,8 @@ const MIGRATIONS = {
   3: (s) => MIGRATIONS[1](s),
   // v4 → v5：操作しながら進むチュートリアル。すでに遊んでいるデータは完了扱い
   4: (s) => { s.tutorial = { step: 'done' }; delete s.tutorialDone; s.machines.forEach((m) => { m.open ??= true; }); return s; },
+  // v5 → v6：お知らせ一覧はアップデートと救済だけに。それ以外は alerts へ
+  5: (s) => { s.alerts = (s.notices || []).filter((n) => !NOTICE_TYPES.includes(n.type)); s.notices = (s.notices || []).filter((n) => NOTICE_TYPES.includes(n.type)); return s; },
 };
 
 export function migrate(raw) {
@@ -197,9 +198,15 @@ export function update(mutator) {
  * type: soldOut / lowStock / sales / events / location / trouble / system
  * target: '#machine-<id>' などの画面
  */
+// お知らせの一覧に載せるのはアップデートと救済（経営支援金・補填）だけ。
+// それ以外（売り切れ・トラブルなど）は alerts に入れ、端末への通知とトーストにだけ使う
+export const NOTICE_TYPES = ['update', 'support'];
 export function addNotice(s, text, { type = 'system', target = null } = {}) {
-  s.notices.unshift({ id: uid('n'), at: Date.now(), text, read: false, type, target });
-  s.notices.length = Math.min(s.notices.length, BALANCE.maxNotices);
+  const item = { id: uid('n'), at: Date.now(), text, read: false, type, target };
+  const list = NOTICE_TYPES.includes(type) ? 'notices' : 'alerts';
+  s[list] ??= [];
+  s[list].unshift(item);
+  s[list].length = Math.min(s[list].length, BALANCE.maxNotices);
 }
 
 // ---------- 集計（画面用の読み取り専用ヘルパー） ----------
