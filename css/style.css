@@ -1006,3 +1006,19 @@ html.no-scroll,html.no-scroll body{overflow:hidden;overscroll-behavior:none}
 .rp-swap{margin-top:10px;border-top:2px solid var(--line);padding-top:10px}
 .rp-swap-head{display:flex;align-items:center;justify-content:space-between;gap:8px}
 .rp-swap-head b{font-size:14px}
+
+/* ---------- 仕入れカード：倉庫の本数（絵の左上に重ねる） ---------- */
+.bcard-art{position:relative}
+.bcard-wh{position:absolute;top:4px;left:4px;display:inline-flex;align-items:center;gap:2px;background:rgba(255,255,255,.92);border-radius:99px;padding:1px 7px 1px 4px;font-size:11.5px;font-weight:900;color:var(--ink);box-shadow:0 1px 2px rgba(29,43,85,.15)}
+.bcard-wh .ill{width:14px;height:14px}
+.bcard-wh.zero{color:var(--red-d)}
+
+/* ---------- 自販機詳細：自販機の右に縦4つのボタン ---------- */
+.stage.with-btns{justify-content:space-between;gap:10px}
+.stage.with-btns .stage-machine{flex:0 1 auto;min-width:0}
+.stage-btns{flex:none;width:min(120px,32vw);align-self:stretch;display:flex;flex-direction:column;justify-content:flex-end;gap:9px;padding:6px 0 10px}
+.stage-btns .bbtn{flex:1 1 0;min-height:0;max-height:92px;font-size:13.5px;border-radius:16px;gap:1px;padding:4px;line-height:1.2}
+.stage-btns .bbtn-ic .ic{width:24px;height:24px}
+.stage-btns .bbtn small{font-size:10.5px;font-weight:800;opacity:.95}
+.sb-tag{position:absolute;top:-12px;right:-6px;width:auto !important;height:auto !important;border-radius:99px !important;background:var(--red) !important;font-style:normal;font-size:10.5px;font-weight:900;padding:1px 7px;border:2px solid #fff;text-shadow:none}
+.sb-tag.soft{background:var(--yellow-d) !important}

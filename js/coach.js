@@ -61,13 +61,13 @@ function guide(s) {
       if (h === `#refill-${m.id}`) return $('.rp-lot')
         ? { text: '枠を選んで、倉庫の商品をタップ。+1・+5・満タンで数量を変えられます。', target: '.rp-lot', allow: ['.sg', '.rp'] }
         : { text: '「+1」「+5」「満タン」で数量を決めて補充しましょう。', target: '.rp-btn.main', allow: ['.sg', '.rp'] };
-      if (h === mh) return { text: '「補充・回収」をタップしましょう。', target: 'a.bbtn.blue' };
+      if (h === mh) return { text: '「補充・回収」をタップしましょう。', target: 'a.sb-refill' };
       return { text: '自販機を選んで、倉庫の商品を並べましょう。', go: [mh, '自販機へ'] };
     }
     case 'price': {
       if (!m) return null;
       if (h === `#price-${m.id}`) return { text: '＋−で販売価格を決めて「保存する」。今の価格でよければ「この価格で決定」でOK。', target: '[data-save]:not([disabled])', allow: ['#op'], action: ['この価格で決定', () => setStep('open', { go: mh })] };
-      if (h === mh) return { text: '「価格変更」をタップして、販売価格を決めましょう。', target: 'a.bbtn.yellow' };
+      if (h === mh) return { text: '「価格変更」をタップして、販売価格を決めましょう。', target: '.stage-btns a.yellow' };
       return { text: '販売価格を決めましょう。', go: [mh, '自販機へ'] };
     }
     case 'open':

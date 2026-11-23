@@ -47,10 +47,13 @@ function stockTab(s) {
 // 仕入れ：3列の商品グリッド → 「カート」で追加 → カート画面で数量を調整して購入
 function buyTab(s) {
   if (!s.products.length) return `<section class="wcard wh-empty">${ill('cup')}<b>商品がありません</b><a class="btn primary" href="#product-new">${icon('flask')}商品を開発する</a></section>`;
+  // 商品ごとの在庫（倉庫は旧仕様の在庫もまとめて数える）
+  const inWh = (p) => Object.values(s.warehouse).filter((w) => w.snap?.productId === p.id).reduce((a, w) => a + (w.qty || 0), 0);
   const cards = s.products.map((p) => {
     const q = ui.cart[p.id] || 0;
+    const wh = inWh(p);
     return `<div class="bcard ${q ? 'in' : ''}">
-      <span class="bcard-art ${p.temp}">${drinkSVG(p)}</span>
+      <span class="bcard-art ${p.temp}">${drinkSVG(p)}<span class="bcard-wh ${wh ? '' : 'zero'}" title="倉庫の在庫">${ill('warehouse')}${num(wh)}</span></span>
       <b class="bcard-name">${esc(p.name)}</b>
       <span class="bcard-cost">${unitOf(s, p) < p.unitCost ? `<s>${yen(p.unitCost)}</s>` : ''}${yen(unitOf(s, p))}<small>/本</small></span>
       <div class="mini-step" data-card="${p.id}">

@@ -81,15 +81,10 @@ export function renderDetail(s, id) {
   return `${pageHead({ title: '自販機詳細', ic: 'machine', back: '#machines', right: locPill(loc.name + 'エリア') })}
   ${down}${closed}${evRow}
   <div class="detail">
-    <div class="stage"><div class="stage-machine">${machineSVG(m)}</div></div>
+    <div class="stage with-btns"><div class="stage-machine">${machineSVG(m)}</div>${sideButtons(m, x)}</div>
     <div class="detail-side">
       ${salesPanel(s, m)}
-      <div class="bbtns">
-        <a class="bbtn blue" href="#refill-${m.id}"><span class="bbtn-ic">${icon('refill')}</span>補充・回収</a>
-        <a class="bbtn green" href="#arrange-${m.id}"><span class="bbtn-ic">${icon('swap')}</span>並び替え</a>
-        <a class="bbtn yellow" href="#price-${m.id}"><span class="bbtn-ic">${icon('yen')}</span>価格変更</a>
-        <a class="bbtn purple" href="#upgrade-${m.id}"><span class="bbtn-ic">${icon('bolt')}</span>設備強化</a>
-      </div>
+
     </div>
   </div>
   <section class="wcard info-strip">
@@ -117,4 +112,17 @@ export function mountDetail(el) {
     se('success');
     toast('営業を開始しました');
   });
+}
+
+// 自販機の右に縦に並べる操作ボタン（補充をすぐ押せるように一番上）
+function sideButtons(m, x) {
+  const out = m.slots.filter((sl) => sl.item && sl.stock === 0).length;
+  const empty = m.slots.filter((sl) => !sl.item).length;
+  const tag = out ? `<em class="sb-tag">売切${out}</em>` : empty ? `<em class="sb-tag soft">空き${empty}</em>` : '';
+  return `<nav class="stage-btns" aria-label="自販機の操作">
+    <a class="bbtn blue sb-refill" href="#refill-${m.id}">${tag}<span class="bbtn-ic">${icon('refill')}</span>補充・回収<small>${num(x.stock)}/${num(x.capacity)}本</small></a>
+    <a class="bbtn green" href="#arrange-${m.id}"><span class="bbtn-ic">${icon('swap')}</span>並び替え</a>
+    <a class="bbtn yellow" href="#price-${m.id}"><span class="bbtn-ic">${icon('yen')}</span>価格変更</a>
+    <a class="bbtn purple" href="#upgrade-${m.id}"><span class="bbtn-ic">${icon('bolt')}</span>設備強化</a>
+  </nav>`;
 }
