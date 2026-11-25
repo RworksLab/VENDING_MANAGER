@@ -9,7 +9,6 @@ import { OUTLINE as O } from './art.js';
 import { esc, num } from '../util.js';
 
 export const MAP_W = 400, MAP_H = 330;
-const PIN_OFFSETS = [[0, 0], [32, 6], [-32, 6], [16, -30], [-16, -30]];
 
 // エリアの区画（x, y, w, h）と、ピンを置く基準点
 const AREA = {
@@ -101,19 +100,35 @@ export function townMap(s) {
     <rect x="128" y="0" width="12" height="${MAP_H}" fill="#eef1f6"/><rect x="260" y="0" width="12" height="${MAP_H}" fill="#eef1f6"/>
     <path d="M134 0v${MAP_H}M266 0v${MAP_H}" stroke="#fff" stroke-width="1.6" stroke-dasharray="6 6"/>`;
 
-  // 同じエリアに複数台あるときは横にずらす
-  const perArea = {};
+  // 同じエリアに複数台あるときは、区画の中にマス目状に並べる（台数が多いほど小さく）
+  const byArea = {};
+  s.machines.forEach((m) => (byArea[m.locationId] ??= []).push(m));
   const pins = s.machines.map((m) => {
+    const list = byArea[m.locationId];
+    const n = list.length, i = list.indexOf(m);
     const a = AREA[m.locationId] || AREA.residential;
-    const i = (perArea[m.locationId] = (perArea[m.locationId] ?? -1) + 1);
-    const [dx, dy] = PIN_OFFSETS[i % PIN_OFFSETS.length];
-    const px = a.pin[0] + dx, py = a.pin[1] + dy;
+    const [x, y, w, h] = a.r;
+    // 1台なら区画の真ん中（エリア名の上）。ピンは中心を基準に置く
+    let px = x + w / 2, py = y + 6 + (h - 34) / 2, size = '';
+    if (n > 1) {
+      const cols = n <= 4 ? 2 : 3, rows = Math.ceil(n / cols);
+      const top = y + 6, usableH = h - 6 - 28;                 // 下はエリア名のぶん空ける
+      const cw = (w - 8) / cols, ch = usableH / rows;
+      const r = Math.floor(i / cols), c = i % cols;
+      const inRow = Math.min(cols, n - r * cols);               // 最後の行は中央寄せ
+      const left = x + 4 + ((cols - inRow) * cw) / 2;
+      px = left + cw * (c + 0.5);
+      py = top + ch * (r + 0.5);                                // 複数台のときはマスの中心に置く
+      size = n <= 4 ? 'sm' : 'xs';
+    }
     const st = machineStatus(m);
     const today = s.today.byMachine[m.id]?.sales || 0;
-    return `<a class="pin st-${st.key} ${st.down ? 'is-down' : ''}" href="#machine-${m.id}" style="left:${(px / MAP_W) * 100}%;top:${(py / MAP_H) * 100}%" aria-label="${esc(m.name)}：${st.label}">
+    const no = m.name.replace(/号機$/, '');
+    // 1台だけなら名前と本日の売上の札、複数台ならアイコンに号機の番号だけ
+    return `<a class="pin st-${st.key} ${st.down ? 'is-down' : ''} ${size}" href="#machine-${m.id}" style="left:${(px / MAP_W) * 100}%;top:${(py / MAP_H) * 100}%" aria-label="${esc(m.name)}：${st.label}・本日¥${num(today)}">
       <span class="pin-pulse"></span>
-      <span class="pin-body">${miniMachine(m.color || '#4aa8f0')}<i>${st.down ? '!' : ''}</i></span>
-      <span class="pin-label">${esc(m.name)}<b>¥${num(today)}</b></span>
+      <span class="pin-body">${miniMachine(m.color || '#4aa8f0')}<i>${st.down ? '!' : ''}</i>${size ? `<b class="pin-no">${esc(no)}</b>` : ''}</span>
+      ${size ? '' : `<span class="pin-label">${esc(m.name)}<b>¥${num(today)}</b></span>`}
     </a>`;
   }).join('');
 

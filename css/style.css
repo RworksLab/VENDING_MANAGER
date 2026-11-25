@@ -1033,3 +1033,19 @@ a,button,input,select,textarea,label,.slot,.sg-cell{touch-action:manipulation}
 body{height:100%;min-height:0 !important;overflow:hidden}
 #scroller{position:fixed;inset:0;overflow-x:hidden;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
 #scroller>#bg{z-index:0}#scroller>.view{z-index:1}
+
+/* ---------- マップのピン：マップの幅（cqw）に合わせて大きさを変える ---------- */
+.map{container-type:inline-size}
+.pin{transform:translate(-50%,-50%)}
+.pin-body{width:10cqw;height:11.5cqw;max-width:40px;max-height:46px}
+.pin-body svg{width:60%;height:70%}
+.pin-label{font-size:clamp(8.5px,2.8cqw,11px)}
+/* 同じエリアに複数台：番号だけのアイコンをマス目に並べる */
+.pin.sm .pin-body{width:8.5cqw;height:10cqw;border-width:2px;border-radius:8px}
+.pin.xs .pin-body{width:6.2cqw;height:7.2cqw;border-width:1.5px;border-radius:6px;box-shadow:0 1.5px 0 var(--ink)}
+.pin-no{position:absolute;right:-28%;bottom:-22%;min-width:15px;height:15px;border-radius:8px;padding:0 3px;background:var(--ink);color:#fff;font:900 9.5px/15px sans-serif;text-align:center;border:1.5px solid #fff}
+.pin.xs .pin-no{min-width:12px;height:12px;font-size:8px;line-height:12px;padding:0 2px}
+.pin.sm .pin-body i,.pin.xs .pin-body i{width:9px;height:9px;top:-4px;right:-4px;font-size:7px;border-width:1.5px}
+.pin.sm.is-down .pin-body i,.pin.xs.is-down .pin-body i{width:12px;height:12px;top:-5px;right:-5px}
+.pin.sm .pin-pulse,.pin.xs .pin-pulse{display:none}
+.pin-pulse{top:5.75cqw;width:11.5cqw;height:11.5cqw;margin:-5.75cqw 0 0 -5.75cqw;max-width:46px;max-height:46px}
