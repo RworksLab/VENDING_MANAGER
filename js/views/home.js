@@ -11,7 +11,7 @@ import { findGenre } from '../config.js';
 import { se } from '../audio.js';
 
 export function render(s) {
-  const running = s.machines.filter((m) => machineStatus(m).key !== 'idle').length;
+  const running = s.machines.filter((m) => machineStatus(m).key !== 'idle').length;   // 停止中（トラブル・営業前を含む）は数えない
   const nf = s.notifications || {};
   const unread = s.notices.filter((n) => !n.read).length;
   const info = dayInfo(s.events.seed, s.today.date);

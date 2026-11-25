@@ -6,6 +6,7 @@ import { effectsForLocation } from '../events.js';
 import { yen, num, esc, fmtDateTime } from '../util.js';
 import { pageHead, locPill } from './parts.js';
 import { expectedPerHour, isDown, upkeepOf } from '../sim.js';
+import { machineStatus } from '../render/map.js';
 import { openMachine } from '../actions.js';
 import { toast } from '../ui.js';
 import { se } from '../audio.js';
@@ -37,11 +38,12 @@ export function renderList(s) {
     const x = machineSummary(m);
     const today = s.today.byMachine[m.id]?.sales || 0;
     const pct = x.capacity ? Math.round((x.stock / x.capacity) * 100) : 0;
+    const st = machineStatus(m);
     return `
     <a class="mcard wcard" href="#machine-${m.id}">
       <div class="mcard-art">${machineSVG(m, { compact: true })}</div>
       <div class="mcard-body">
-        <b class="mcard-name">${esc(m.name)}</b>
+        <b class="mcard-name">${esc(m.name)}${st.down ? '<em class="tag red trouble-chip">トラブル発生中</em>' : ''}</b>
         ${locPill(findLocation(m.locationId).name)}
         <div class="mcard-nums"><span><small>本日</small>${yen(today)}</span><span><small>累計</small>${yen(m.totalSales)}</span></div>
         <div class="bar ${pct < 25 ? 'low' : ''}"><i style="width:${pct}%"></i></div>

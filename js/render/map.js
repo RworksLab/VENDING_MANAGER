@@ -63,7 +63,9 @@ function areaArt(id, [x, y, w, h]) {
 
 export function machineStatus(m) {
   const x = machineSummary(m);
-  if (isDown(m)) return { key: 'warn', label: m.downReason || 'トラブル' };
+  // 停止中（グレー）：トラブル中・営業開始前・商品がない／在庫0。トラブルはピンに「！」を付けて見分ける
+  if (isDown(m)) return { key: 'idle', label: m.downReason || 'トラブル', down: true };
+  if (m.open === false) return { key: 'idle', label: '営業前' };
   if (!x.filled || x.stock === 0) return { key: 'idle', label: '停止中' };
   if (x.soldOut) return { key: 'warn', label: '売切あり' };
   if (x.low) return { key: 'low', label: '残りわずか' };
@@ -108,9 +110,9 @@ export function townMap(s) {
     const px = a.pin[0] + dx, py = a.pin[1] + dy;
     const st = machineStatus(m);
     const today = s.today.byMachine[m.id]?.sales || 0;
-    return `<a class="pin st-${st.key}" href="#machine-${m.id}" style="left:${(px / MAP_W) * 100}%;top:${(py / MAP_H) * 100}%" aria-label="${esc(m.name)}：${st.label}">
+    return `<a class="pin st-${st.key} ${st.down ? 'is-down' : ''}" href="#machine-${m.id}" style="left:${(px / MAP_W) * 100}%;top:${(py / MAP_H) * 100}%" aria-label="${esc(m.name)}：${st.label}">
       <span class="pin-pulse"></span>
-      <span class="pin-body">${miniMachine(m.color || '#4aa8f0')}<i></i></span>
+      <span class="pin-body">${miniMachine(m.color || '#4aa8f0')}<i>${st.down ? '!' : ''}</i></span>
       <span class="pin-label">${esc(m.name)}<b>¥${num(today)}</b></span>
     </a>`;
   }).join('');

@@ -1022,3 +1022,10 @@ html.no-scroll,html.no-scroll body{overflow:hidden;overscroll-behavior:none}
 .stage-btns .bbtn small{font-size:10.5px;font-weight:800;opacity:.95}
 .sb-tag{position:absolute;top:-12px;right:-6px;width:auto !important;height:auto !important;border-radius:99px !important;background:var(--red) !important;font-style:normal;font-size:10.5px;font-weight:900;padding:1px 7px;border:2px solid #fff;text-shadow:none}
 .sb-tag.soft{background:var(--yellow-d) !important}
+
+/* ---------- トラブル中の自販機 ---------- */
+.pin-body i{display:grid;place-items:center;color:#fff;font:900 10px/1 sans-serif;font-style:normal}
+.pin.is-down .pin-body i{width:18px;height:18px;top:-8px;right:-8px;background:var(--red)}
+
+.mcard-name{display:flex;align-items:center;flex-wrap:wrap;gap:8px}
+.trouble-chip{font-style:normal;font-size:12px;font-weight:900;padding:3px 10px;border-radius:99px}
