@@ -981,7 +981,6 @@ a,button,input,select,textarea,label,.slot,.sg-cell{touch-action:manipulation}
 .home-page{justify-content:space-between;height:calc(100dvh - var(--hud-h) - max(10px,env(safe-area-inset-top)) - var(--tab-h) - 14px - env(safe-area-inset-bottom));min-height:0 !important;overflow:hidden}
 .home-page .map-card{min-height:0;max-height:calc((100vw - 44px) * 0.825 + 44px)}
 /* ホームはスクロールしない（どの画面サイズでも一画面に収める） */
-html.no-scroll,html.no-scroll body{overflow:hidden;overscroll-behavior:none}
 /* 低い画面ではほかの部品を詰めて、マップの大きさを確保する */
 @media(max-height:760px){
   .home-page{gap:8px}
