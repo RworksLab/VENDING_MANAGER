@@ -7,7 +7,7 @@ import { salePrice, costRate } from '../events.js';
 import { drinkSVG, machineSVG } from '../render/art.js';
 import { icon, ill } from '../icons.js';
 import { esc, num, yen, fmtDateTime } from '../util.js';
-import { toast, openSheet, closeSheet } from '../ui.js';
+import { toast, openSheet, closeSheet, scrollPos, scrollToY } from '../ui.js';
 import { pageHead } from './parts.js';
 import { se } from '../audio.js';
 
@@ -152,7 +152,7 @@ export function render(s) {
 }
 
 export function mount(el) {
-  const redraw = () => { const y = scrollY; el.innerHTML = render(getState()); mount(el); scrollTo(0, y); };
+  const redraw = () => { const y = scrollPos(); el.innerHTML = render(getState()); mount(el); scrollToY(y); };
   el.querySelectorAll('[data-tab]').forEach((b) => b.addEventListener('click', () => { ui.tab = b.dataset.tab; redraw(); }));
   const body = el.querySelector('#wh-body');   // 描画のたびに作り直される要素にだけ委譲する
   body.addEventListener('click', (e) => {

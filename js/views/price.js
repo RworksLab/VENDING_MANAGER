@@ -7,7 +7,7 @@ import { PRODUCT_FORM, priceHintOf, findLocation } from '../config.js';
 import { expectedPerHour, refPrice, crowdAt, toleranceOf } from '../sim.js';
 import { drinkSVG } from '../render/art.js';
 import { esc, yen } from '../util.js';
-import { toast } from '../ui.js';
+import { toast, scrollPos, scrollToY } from '../ui.js';
 import { pageHead, locPill } from './parts.js';
 import { se } from '../audio.js';
 import { notePriced } from '../coach.js';
@@ -58,7 +58,7 @@ export function render(s, id) {
 export function mount(el, s, id) {
   const box = el.querySelector('#op');
   if (!box) return;
-  const redraw = () => { const y = scrollY; el.innerHTML = render(getState(), id); mount(el, getState(), id); scrollTo(0, y); };
+  const redraw = () => { const y = scrollPos(); el.innerHTML = render(getState(), id); mount(el, getState(), id); scrollToY(y); };
   const setPrice = (i, v) => {
     const m = getState().machines.find((x) => x.id === id);
     const p = clamp(v);

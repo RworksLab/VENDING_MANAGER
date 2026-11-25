@@ -43,3 +43,19 @@ export function toast(text) {
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
 }
+
+// ---------- スクロール ----------
+// ページ全体は動かさず、ヘッダーとナビの間（#scroller）だけをスクロールする
+// （iPhone のホーム画面アプリで、固定したナビがスクロールにつられて動くのを防ぐ）
+const sc = () => document.getElementById('scroller');
+export const scrollPos = () => sc()?.scrollTop || 0;
+export const scrollToY = (y, smooth = false) => sc()?.scrollTo({ top: y, behavior: smooth ? 'smooth' : 'auto' });
+export const scrollByY = (dy, smooth = true) => sc()?.scrollBy({ top: dy, behavior: smooth ? 'smooth' : 'auto' });
+export const scrollMax = () => (sc() ? sc().scrollHeight - sc().clientHeight : 0);
+// 見えている高さを CSS 変数に（ホームを一画面ぴったりにするため）
+export function trackAppHeight() {
+  const set = () => document.documentElement.style.setProperty('--app-h', `${sc()?.clientHeight || innerHeight}px`);
+  set();
+  addEventListener('resize', set);
+  visualViewport?.addEventListener('resize', set);
+}

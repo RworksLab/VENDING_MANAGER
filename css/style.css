@@ -20,7 +20,7 @@ body[data-tod=night]{--ground:#4a5276;--sky:#1f2b5c}
 body[data-tod=evening]{--sky:#ffa77d}
 body[data-tod=dawn]{--sky:#9cc9f2}
 *{box-sizing:border-box;min-width:0}
-html{-webkit-text-size-adjust:100%;touch-action:manipulation}  /* ダブルタップでの拡大を止める */
+html{-webkit-text-size-adjust:100%;touch-action:manipulation;height:100%;overflow:hidden}  /* ダブルタップでの拡大を止める */
 body{margin:0;min-height:100vh;position:relative;color:var(--ink);background:var(--page);overflow-x:clip;-webkit-tap-highlight-color:transparent;
   font:16px/1.5 "M PLUS Rounded 1c","Hiragino Maru Gothic ProN",system-ui,sans-serif;font-weight:700}
 a{color:inherit;text-decoration:none}
@@ -960,7 +960,7 @@ a,button,input,select,textarea,label,.slot,.sg-cell{touch-action:manipulation}
 @media(max-width:380px){.hud-title span{font-size:15px}.hud-right{gap:6px}}
 
 /* ---------- ホーム：画面にぴったり収める ---------- */
-.home-page{display:flex;flex-direction:column;gap:10px;min-height:calc(100dvh - var(--hud-h) - max(10px,env(safe-area-inset-top)) - var(--tab-h) - 14px - env(safe-area-inset-bottom))}
+.home-page{display:flex;flex-direction:column;gap:10px;min-height:calc(var(--app-h, 100dvh) - var(--hud-h) - max(10px,env(safe-area-inset-top)) - var(--tab-h) - 14px - env(safe-area-inset-bottom))}
 .home-page>*{margin:0 !important}
 .home-page .map-card{flex:1 1 0;min-height:190px;display:flex;flex-direction:column;gap:6px}
 .map-wrap{flex:1 1 0;min-height:0;container-type:size;display:grid;place-items:center}
@@ -978,7 +978,7 @@ a,button,input,select,textarea,label,.slot,.sg-cell{touch-action:manipulation}
 .gc-tip .wx{width:20px;height:20px;flex:none}
 @media(min-width:900px){.home-page{max-width:860px;margin:0 auto;min-height:0}.home-page .map-card{flex:none}.map-wrap{container-type:normal}.map-wrap .map{width:100%}}
 /* 小さい画面でマップが小さくなりすぎないように（幅の8割以上）。収まらなければ少しスクロール */
-.home-page{justify-content:space-between;height:calc(100dvh - var(--hud-h) - max(10px,env(safe-area-inset-top)) - var(--tab-h) - 14px - env(safe-area-inset-bottom));min-height:0 !important;overflow:hidden}
+.home-page{justify-content:space-between;height:calc(var(--app-h, 100dvh) - var(--hud-h) - max(10px,env(safe-area-inset-top)) - var(--tab-h) - 14px - env(safe-area-inset-bottom));min-height:0 !important;overflow:hidden}
 .home-page .map-card{min-height:0;max-height:calc((100vw - 44px) * 0.825 + 44px)}
 /* ホームはスクロールしない（どの画面サイズでも一画面に収める） */
 /* 低い画面ではほかの部品を詰めて、マップの大きさを確保する */
@@ -1028,3 +1028,8 @@ a,button,input,select,textarea,label,.slot,.sg-cell{touch-action:manipulation}
 
 .mcard-name{display:flex;align-items:center;flex-wrap:wrap;gap:8px}
 .trouble-chip{font-style:normal;font-size:12px;font-weight:900;padding:3px 10px;border-radius:99px}
+
+/* ---------- スクロール枠：ページ全体は動かさず、この中だけスクロールする ---------- */
+body{height:100%;min-height:0 !important;overflow:hidden}
+#scroller{position:fixed;inset:0;overflow-x:hidden;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+#scroller>#bg{z-index:0}#scroller>.view{z-index:1}

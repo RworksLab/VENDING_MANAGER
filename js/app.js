@@ -25,7 +25,7 @@ import { SIM } from './config.js';
 import { dateKey, yen, num, esc } from './util.js';
 import { coin, ill } from './icons.js';
 import { sceneSVG, timeOfDay } from './render/art.js';
-import { closeSheet, openSheet, toast } from './ui.js';
+import { closeSheet, openSheet, toast, scrollPos, scrollToY, trackAppHeight } from './ui.js';
 import { registerSW, systemNotify, setBadge } from './notify.js';
 import { initAudio, se } from './audio.js';
 import { initCoach } from './coach.js';
@@ -83,12 +83,12 @@ function render() {
   const m = location.hash.startsWith('#machine-') && s.machines.find((x) => `#machine-${x.id}` === location.hash);
   renderBackdrop(m ? m.locationId : null, factorsAt(s).info.weather.id);
   const same = lastHash === location.hash;
-  const y = scrollY;
+  const y = scrollPos();
   renderHud(s);
   view.innerHTML = r.html(s);
   r.mount?.(view, s);
   document.querySelectorAll('.tabbar a').forEach((a) => a.setAttribute('aria-current', a.dataset.tab === r.tab ? 'page' : 'false'));
-  if (same) scrollTo(0, y); else scrollTo(0, 0);
+  scrollToY(same ? y : 0);
   lastHash = location.hash;
   alignGround();
 }
@@ -99,7 +99,7 @@ function alignGround() {
   const stage = view.querySelector('.stage');
   const k = Math.max(innerWidth / 900, 1);
   const ground = 560 - 90 * k;
-  const top = stage ? stage.getBoundingClientRect().bottom + scrollY - ground : 0;
+  const top = stage ? stage.getBoundingClientRect().bottom + scrollPos() - ground : 0;
   bg.style.top = `${Math.round(top)}px`;
 }
 addEventListener('resize', alignGround);
@@ -144,6 +144,7 @@ async function boot() {
   watchNotices(getState());
   registerSW();
   initAudio();
+  trackAppHeight();
   initUpdateCheck();
   document.body.classList.add('ready');
   // ラベル画像は本体の後から読み込み、揃ったら描き直す

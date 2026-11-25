@@ -7,7 +7,7 @@
 //  - 各ステップは「状態」を見て自動で次へ進む（どの画面から操作しても OK）
 // =============================================================
 import { getState, update } from './state.js';
-import { openSheet, closeSheet, confirmDialog, toast } from './ui.js';
+import { openSheet, closeSheet, confirmDialog, toast, scrollPos, scrollByY, scrollMax } from './ui.js';
 import { tutorialSale } from './actions.js';
 import { yen } from './util.js';
 import { coin } from './icons.js';
@@ -249,7 +249,7 @@ function paint() {
       if (rb.top < cb.bottom + 10 || rb.bottom > innerHeight - 90) {
         // 案内カードに隠れない位置までスクロール
         const want = cb.bottom + (innerHeight - cb.bottom) / 2 - rb.height / 2;
-        scrollBy({ top: rb.top - want, behavior: 'smooth' });
+        scrollByY(rb.top - want);
       }
     }
   }
@@ -264,8 +264,8 @@ function placeBar(target) {
   const tops = holes.filter((h) => h.isConnected).map((h) => h.getBoundingClientRect()).filter((r) => r.height);
   const tb = tops.reduce((a, r) => (r.top < a.top ? r : a), target.getBoundingClientRect());
   const cb = bar.getBoundingClientRect();
-  const canScrollUp = scrollY > 0 || document.documentElement.scrollHeight - innerHeight > tb.top - cb.bottom;
-  if (tb.top < cb.bottom + 8 && !(canScrollUp && scrollY + tb.top - cb.bottom - 20 > 0)) bar.classList.add('bottom');
+  const canScrollUp = scrollPos() > 0 || scrollMax() > tb.top - cb.bottom;
+  if (tb.top < cb.bottom + 8 && !(canScrollUp && scrollPos() + tb.top - cb.bottom - 20 > 0)) bar.classList.add('bottom');
 }
 
 let raf = 0;

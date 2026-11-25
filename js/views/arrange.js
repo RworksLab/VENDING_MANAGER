@@ -8,6 +8,7 @@ import { MACHINE_MODELS, slotMatches, findLocation } from '../config.js';
 import { slotGrid } from './slotgrid.js';
 import { pageHead, locPill } from './parts.js';
 import { se } from '../audio.js';
+import { scrollPos, scrollToY } from '../ui.js';
 
 const ui = { id: null, picked: null };
 
@@ -36,12 +37,12 @@ export function mount(el, s, id) {
     const i = Number(b.dataset.cell);
     if (ui.picked === null) {
       ui.picked = i;
-      const y = scrollY; el.innerHTML = render(getState(), id); mount(el, getState(), id); scrollTo(0, y);
+      const y = scrollPos(); el.innerHTML = render(getState(), id); mount(el, getState(), id); scrollToY(y);
       return;
     }
     const from = ui.picked;
     ui.picked = null;
     if (from !== i) { se('swap'); swapSlots(id, from, i); }   // 保存と同時に画面が描き直される
-    else { const y = scrollY; el.innerHTML = render(getState(), id); mount(el, getState(), id); scrollTo(0, y); }
+    else { const y = scrollPos(); el.innerHTML = render(getState(), id); mount(el, getState(), id); scrollToY(y); }
   });
 }

@@ -8,7 +8,7 @@ import { slotHintOf, slotMatches, findLocation } from '../config.js';
 import { drinkSVG } from '../render/art.js';
 import { icon } from '../icons.js';
 import { esc, num } from '../util.js';
-import { toast } from '../ui.js';
+import { toast, scrollPos, scrollToY } from '../ui.js';
 import { slotGrid } from './slotgrid.js';
 import { pageHead, locPill } from './parts.js';
 import { se } from '../audio.js';
@@ -83,7 +83,7 @@ export function render(s, id) {
 export function mount(el, s, id) {
   const box = el.querySelector('#op');
   if (!box) return;
-  const redraw = () => { const y = scrollY; el.innerHTML = render(getState(), id); mount(el, getState(), id); scrollTo(0, y); };
+  const redraw = () => { const y = scrollPos(); el.innerHTML = render(getState(), id); mount(el, getState(), id); scrollToY(y); };
   box.addEventListener('click', (e) => {
     const b = e.target.closest('button');
     if (!b) return;
