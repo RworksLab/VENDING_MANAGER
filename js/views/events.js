@@ -37,7 +37,7 @@ export function render(s) {
     return `<li class="up-day">
       <span class="ud-date"><b>${md(key)}</b><small class="${['日', '土'].includes(wd(key)) ? 'we' : ''}">${wd(key)}</small></span>
       <span class="ud-wx">${weatherIcon(d.weather.id)}<small>${esc(d.weather.name)}</small></span>
-      <span class="ud-evs">${evs.length ? evs.map((e) => `<em class="chip-ev ${e.scale}">${esc(e.name)}${e.start === key ? '' : '（開催中）'}</em>`).join('') : '<small class="muted">予定なし</small>'}</span>
+      <span class="ud-evs">${evs.length ? evs.map((e) => `<em class="chip-ev ${e.scale}">${esc(e.name)}${e.start <= today ? '（開催中）' : ''}</em>`).join('') : '<small class="muted">予定なし</small>'}</span>
     </li>`;
   }).join('');
 
